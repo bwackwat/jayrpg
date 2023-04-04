@@ -1,5 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
+import JayState from './state.js';
+
 export const particle_system = (() => {
 
   const _VS = `
@@ -213,7 +215,6 @@ export const particle_system = (() => {
           vertexColors: true
       });
   
-      this.camera_ = params.camera;
       this.particles_ = [];
   
       this.geometry_ = new THREE.BufferGeometry();
@@ -290,8 +291,8 @@ export const particle_system = (() => {
       this.particles_ = this.emitters_.map(e => e.particles_);
       this.particles_ = this.particles_.flat();
       this.particles_.sort((a, b) => {
-        const d1 = this.camera_.position.distanceTo(a.position);
-        const d2 = this.camera_.position.distanceTo(b.position);
+        const d1 = JayState.camera.position.distanceTo(a.position);
+        const d2 = JayState.camera.position.distanceTo(b.position);
   
         if (d1 > d2) {
           return -1;

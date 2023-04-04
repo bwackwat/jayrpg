@@ -48,7 +48,6 @@ export const player_entity = (() => {
     }
 
     Init_() {
-      // CUSTOM
       this.decceleration_ = new THREE.Vector3(-5.0, -0.0001, -5.0);
       this.acceleration_ = new THREE.Vector3(60.0, 0.125, 60.0);
       // this.decceleration_ = new THREE.Vector3(-0.0005, -0.0001, -5.0);
@@ -224,7 +223,6 @@ export const player_entity = (() => {
       frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
           Math.abs(frameDecceleration.z), Math.abs(velocity.z));
       
-      // CUSTOM
       frameDecceleration.x = Math.sign(frameDecceleration.x) * Math.min(
         Math.abs(frameDecceleration.x), Math.abs(velocity.x));
   
@@ -242,7 +240,6 @@ export const player_entity = (() => {
         acc.multiplyScalar(2.0);
       }
 
-      // CUSTOM
       if (JayState.controlScheme == 0){
         if (input._keys.forward) {
           velocity.z += acc.z * timeInSeconds;
@@ -311,16 +308,16 @@ export const player_entity = (() => {
       forward.applyQuaternion(controlObject.quaternion);
       forward.normalize();
   
-      const sideways = new THREE.Vector3(1, 0, 0);
-      sideways.applyQuaternion(controlObject.quaternion);
-      sideways.normalize();
+      // const sideways = new THREE.Vector3(1, 0, 0);
+      // sideways.applyQuaternion(controlObject.quaternion);
+      // sideways.normalize();
   
-      sideways.multiplyScalar(velocity.x * timeInSeconds);
+      // sideways.multiplyScalar(velocity.x * timeInSeconds);
       forward.multiplyScalar(velocity.z * timeInSeconds);
   
       const pos = controlObject.position.clone();
       pos.add(forward);
-      pos.add(sideways);
+      // pos.add(sideways);
 
       const collisions = this._FindIntersections(pos, oldPosition);
       if (collisions.length > 0) {
@@ -333,8 +330,18 @@ export const player_entity = (() => {
       controlObject.position.copy(pos);
   
       this.Parent.SetPosition(controlObject.position);
-      // JayState.orbitControls.target.copy(controlObject.position);
-      // JayState.orbitControls.update();
+
+      let cameraTarget = controlObject.position.clone().add(new THREE.Vector3(0.0, 8.0, 0.0));
+      JayState.orbitControls.target.copy(cameraTarget);
+      // JayState.camera.position.add(new THREE.Vector3(cameraTarget.x, 8.0, cameraTarget.y));
+
+      // const dist = JayState.camera.position.distanceTo(cameraTarget);
+      // if (dist < 110) {
+      //   const dir = JayState.camera.position.clone().sub(cameraTarget).normalize();
+      //   JayState.camera.position.copy(cameraTarget.clone().add(dir.multiplyScalar(110)));
+      // }
+
+      JayState.orbitControls.update();
 
       if (JayState.controlScheme == 0){
         this.Parent.SetQuaternion(controlObject.quaternion);

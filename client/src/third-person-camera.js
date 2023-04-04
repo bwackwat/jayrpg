@@ -11,7 +11,6 @@ export const third_person_camera = (() => {
       super();
 
       this._params = params;
-      this._camera = params.camera;
 
       this._currentPosition = new THREE.Vector3();
       this._currentLookat = new THREE.Vector3();
@@ -45,11 +44,13 @@ export const third_person_camera = (() => {
       // const t = 4.0 * timeElapsed;
       const t = 1.0 - Math.pow(0.01, timeElapsed);
 
-      this._currentPosition.lerp(idealOffset, t);
-      this._currentLookat.lerp(idealLookat, t);
+      // if(JayState.rightMouseDown){
+      //   this._currentPosition.lerp(idealOffset, t);
+      //   JayState.camera.position.copy(this._currentPosition);
 
-      this._camera.position.copy(this._currentPosition);
-      this._camera.lookAt(this._currentLookat);
+      //   // this._currentLookat.lerp(idealLookat, t);
+      //   // JayState.camera.lookAt(this._currentLookat);
+      // }
     }
   }
 

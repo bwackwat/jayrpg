@@ -1,4 +1,4 @@
-import {GUI} from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
+import {GUI} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/libs/lil-gui.module.min.js';
 
 import {entity_manager} from './entity-manager.js';
 import {entity} from './entity.js';
@@ -53,7 +53,6 @@ class CrappyMMOAttempt {
     this._gui = new GUI();
 
     const generalRollup = this._gui.addFolder('General');
-    // CUSTOM
     generalRollup.add(this._guiParams.general, "alternate_controls").onChange(() => {
       if (this._guiParams.general.alternate_controls) {
         JayState.controlScheme = 1;
@@ -71,7 +70,6 @@ class CrappyMMOAttempt {
 
     // Hack
     this.scene_ = threejs.GetComponent('ThreeJSController').scene_;
-    this.camera_ = threejs.GetComponent('ThreeJSController').camera_;
 
     const ui = new entity.Entity();
     ui.AddComponent(new ui_controller.UIController());
@@ -105,12 +103,10 @@ class CrappyMMOAttempt {
     spawner.AddComponent(new spawners.PlayerSpawner({
         grid: this.grid_,
         scene: this.scene_,
-        camera: this.camera_,
     }));
     spawner.AddComponent(new spawners.NetworkEntitySpawner({
         grid: this.grid_,
         scene: this.scene_,
-        camera: this.camera_,
     }));
     this.entityManager_.Add(spawner, 'spawners');
 
@@ -128,24 +124,14 @@ class CrappyMMOAttempt {
 
   LoadPlayer_() {
     const params = {
-      camera: this.camera_,
       scene: this.scene_,
     };
 
     const levelUpSpawner = new entity.Entity();
     levelUpSpawner.AddComponent(new level_up_component.LevelUpComponentSpawner({
-        camera: this.camera_,
         scene: this.scene_,
     }));
     this.entityManager_.Add(levelUpSpawner, 'level-up-spawner');
-  }
-
-  _OnWindowResize() {
-    this.camera_.aspect = window.innerWidth / window.innerHeight;
-    this.camera_.updateProjectionMatrix();
-    // this.threejs_.setSize(window.innerWidth, window.innerHeight);
-    JayState.renderer.setSize(window.innerWidth, window.innerHeight);
-    // JayState.orbitControls.handleResize();
   }
 
   RAF_() {
@@ -154,7 +140,7 @@ class CrappyMMOAttempt {
         this.previousRAF_ = t;
       }
 
-      JayState.renderer.render(this.scene_, this.camera_);
+      JayState.renderer.render(this.scene_, JayState.camera);
       this.Step_(t - this.previousRAF_);
       this.previousRAF_ = t;
 

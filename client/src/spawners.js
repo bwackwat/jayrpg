@@ -28,7 +28,6 @@ export const spawners = (() => {
 
     Spawn(playerParams) {
       const params = {
-        camera: this.params_.camera,
         scene: this.params_.scene,
         desc: playerParams,
       };
@@ -60,14 +59,11 @@ export const spawners = (() => {
           new attack_controller.AttackController());
       player.AddComponent(
           new third_person_camera.ThirdPersonCamera({
-              camera: this.params_.camera,
               target: player}));
       player.AddComponent(
           new network_player_controller.NetworkEntityController({
-              camera: this.params_.camera,
               target: player}));
       player.AddComponent(new blood_effect.BloodEffect({
-          camera: this.params_.camera,
           scene: this.params_.scene,
       }));
       if (playerParams.character.class == 'sorceror') {
@@ -90,7 +86,6 @@ export const spawners = (() => {
       const npc = new entity.Entity();
       npc.Account = desc.account;
       npc.AddComponent(new npc_entity.NPCController({
-          camera: this.params_.camera,
           scene: this.params_.scene,
           desc: desc,
       }));
@@ -119,13 +114,11 @@ export const spawners = (() => {
           new equip_weapon_component.EquipWeapon({desc: desc}));
       npc.AddComponent(new inventory_controller.InventoryController());
       npc.AddComponent(new blood_effect.BloodEffect({
-          camera: this.params_.camera,
           scene: this.params_.scene,
       }));
       if (desc.character.class == 'sorceror') {
         npc.AddComponent(
             new sorceror_effect.SorcerorEffect({
-                camera: this.params_.camera,
                 scene: this.params_.scene,
             }));
       }

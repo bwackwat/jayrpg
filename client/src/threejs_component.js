@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
+import { MOUSE } from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/TrackballControls.js';
 import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/PointerLockControls.js';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/OrbitControls.js';
@@ -46,6 +47,14 @@ export const threejs_component = (() => {
       super();
     }
 
+    _OnWindowResize() {
+      JayState.camera.aspect = window.innerWidth / window.innerHeight;
+      JayState.camera.updateProjectionMatrix();
+      // this.threejs_.setSize(window.innerWidth, window.innerHeight);
+      JayState.renderer.setSize(window.innerWidth, window.innerHeight);
+      // JayState.orbitControls.handleResize();
+    }
+
     InitEntity() {
       THREE.ShaderChunk.fog_fragment = `
       #ifdef USE_FOG
@@ -86,8 +95,6 @@ export const threejs_component = (() => {
         varying vec3 vWorldPosition;
       #endif`;
 
-      console.log("COMPONENT STARTED");
-
       JayState.renderer = new THREE.WebGLRenderer({
         antialias: false,
       });
@@ -98,82 +105,38 @@ export const threejs_component = (() => {
       JayState.renderer.setPixelRatio(window.devicePixelRatio);
       JayState.renderer.setSize(window.innerWidth, window.innerHeight);
       JayState.renderer.domElement.id = 'threejs';
-      // this.threejs_ = new THREE.WebGLRenderer({
-      //   antialias: false,
-      // });
-      // this.threejs_.outputEncoding = THREE.sRGBEncoding;
-      // this.threejs_.gammaFactor = 2.2;
-      // this.threejs_.shadowMap.enabled = true;
-      // this.threejs_.shadowMap.type = THREE.PCFSoftShadowMap;
-      // this.threejs_.setPixelRatio(window.devicePixelRatio);
-      // this.threejs_.setSize(window.innerWidth, window.innerHeight);
-      // this.threejs_.domElement.id = 'threejs';
 
       document.getElementById('container').appendChild(JayState.renderer.domElement);
 
-      // window.addEventListener('resize', () => {
-      //   this._OnWindowResize();
-      // }, false);
+      window.addEventListener('resize', () => {
+        this._OnWindowResize();
+      }, false);
 
       const fov = 60;
       const aspect = 1920 / 1080;
       const near = 1.0;
       const far = 10000.0;
-      this.camera_ = new THREE.PerspectiveCamera(fov, aspect, near, far);
-      this.camera_.position.set(25, 10, 25);
-
-      // JayState.pointerControls = new PointerLockControls(this.camera_, JayState.renderer.domElement);
-      // JayState.pointerControls.pointerSpeed = 0.0;
-
-
-
-      // fakeCamera = this.camera_.clone();
-      // JayState.orbitControls = new THREE.OrbitControls(fakeCamera, renderer.domElement);
-      // JayState.orbitControls.enablePan = false;
-      // JayState.orbitControls.enableDamping = false;
-
-
-
-      // JayState.orbitControls = new TrackballControls(this.camera_, JayState.renderer.domElement);
-
-      // JayState.orbitControls.rotateSpeed = 1.0;
-      // JayState.orbitControls.zoomSpeed = 1.2;
-      // JayState.orbitControls.panSpeed = 0.8;
-
+      JayState.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      JayState.camera.position.set(25, 10, 25);
 
       
-      // JayState.orbitControls = new OrbitControls(this.camera_, JayState.renderer.domElement);
-      // JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-      // JayState.orbitControls.dampingFactor = 0.05;
+      JayState.orbitControls = new OrbitControls(JayState.camera, document.body);
+      JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+      JayState.orbitControls.dampingFactor = 0.1;
 
-      // JayState.orbitControls.screenSpacePanning = false;
+      JayState.orbitControls.enablePan = false;
 
-      // JayState.orbitControls.minDistance = 100;
-      // JayState.orbitControls.maxDistance = 500;
+      JayState.orbitControls.minDistance = 10;
+      JayState.orbitControls.maxDistance = 50;
 
-      // JayState.orbitControls.maxPolarAngle = Math.PI / 2;
+      JayState.orbitControls.maxPolarAngle = Math.PI / 2;
 
-
-
-      // JayState.orbitControls = new OrbitControls(this.camera_, JayState.renderer.domElement);
-      // JayState.orbitControls.enablePan = true;
-      // JayState.orbitControls.enableDamping = true
-      // JayState.orbitControls.dampingFactor = 0.05
-      // JayState.orbitControls.screenSpacePanning = false
-      // JayState.orbitControls.minDistance = 1
-      // JayState.orbitControls.maxDistance = 1000
-      // JayState.orbitControls.maxPolarAngle = Math.PI / 2
-
-
-      
-      // JayState.renderer.domElement.requestFullscreen();
-      // JayState.pointerControls.lock();
+      JayState.orbitControls.mouseButtons = { LEFT: null, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
 
       document.body.addEventListener('click', function () {
-        // JayState.pointerControls.lock();
-        JayState.renderer.domElement.requestPointerLock()
+        // document.body.requestPointerLock();
         if (typeof(JayState.renderer.domElement) !== 'undefined') {
-          JayState.renderer.domElement.requestFullscreen();
+          document.body.requestFullscreen();
         }
       }, false);
       

@@ -41,20 +41,27 @@ export const player_input = (() => {
     }
 
     _onMouseDown(event) {
-      if(event.button === 1){
+      if(event.button === 0){
+        JayState.leftMouseDown = true;
         // JayState.pointerControls.pointerSpeed = 1.0;
+      }else if(event.button === 2){
+        JayState.rightMouseDown = true;
       }
     }
   
     _onMouseUp(event) {
+      // event.preventDefault();
+
       if(event.button === 0){
+        JayState.leftMouseDown = false;
+
         const rect = document.getElementById('threejs').getBoundingClientRect();
         const pos = {
           x: ((event.clientX - rect.left) / rect.width) * 2  - 1,
           y: ((event.clientY - rect.top ) / rect.height) * -2 + 1,
         };
 
-        this._raycaster.setFromCamera(pos, this._params.camera);
+        this._raycaster.setFromCamera(pos, JayState.camera);
 
         const pickables = this.Manager.Filter((e) => {
           const p = e.GetComponent('PickableComponent');
@@ -65,9 +72,9 @@ export const player_input = (() => {
         });
 
         const ray = new THREE.Ray();
-        ray.origin.setFromMatrixPosition(this._params.camera.matrixWorld);
+        ray.origin.setFromMatrixPosition(JayState.camera.matrixWorld);
         ray.direction.set(pos.x, pos.y, 0.5).unproject(
-            this._params.camera).sub(ray.origin).normalize();
+          JayState.camera).sub(ray.origin).normalize();
 
         // hack
         document.getElementById('quest-ui').style.visibility = 'hidden';
@@ -83,13 +90,14 @@ export const player_input = (() => {
             break;
           }
         }
-      }else if(event.button === 1){
+      }else if(event.button === 2){
+        JayState.rightMouseDown = false;
         // JayState.pointerControls.pointerSpeed = 0.0;
       }
     }
 
     _onKeyDown(event) {
-      // CUSTOM
+      event.preventDefault();
       if(!JayState.keys[event.keyCode]){
         JayState.keys[event.keyCode] = true;
       }
@@ -123,7 +131,6 @@ export const player_input = (() => {
     }
   
     _onKeyUp(event) {
-      // CUSTOM
       JayState.keys[event.keyCode] = false;
 
       if (event.currentTarget.activeElement != document.body) {

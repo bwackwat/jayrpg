@@ -27,7 +27,6 @@ export const level_up_component = (() => {
       this._params = params;
 
       this._particles = new particle_system.ParticleSystem({
-          camera: params.camera,
           parent: params.scene,
           texture: './resources/textures/ball.png',
       });

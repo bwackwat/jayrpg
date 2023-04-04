@@ -1,6 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
 import {entity} from './entity.js';
+import JayState from './state.js';
 
 import {math} from '/shared/math.mjs';
 
@@ -97,7 +98,7 @@ class HealthBar extends entity.Component {
     this.material_.uniforms.colour.value = c;
     this.bar_.position.copy(this.parent_.Position);
     this.bar_.position.y += 8.0;
-    this.bar_.quaternion.copy(this.params_.camera.quaternion);
+    this.bar_.quaternion.copy(JayState.camera.quaternion);
   }
 
   GenerateBuffers_() {
