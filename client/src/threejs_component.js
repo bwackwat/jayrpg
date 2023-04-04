@@ -1,10 +1,14 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
-import {entity} from "./entity.js";
+import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/TrackballControls.js';
+import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/PointerLockControls.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/OrbitControls.js';
+
+import { entity } from "./entity.js";
+
+import JayState from './state.js';
 
 export const threejs_component = (() => {
-
-
   const _VS = `
   varying vec3 vWorldPosition;
   
@@ -14,8 +18,7 @@ export const threejs_component = (() => {
   
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
   }`;
-  
-  
+
   const _FS = `
   uniform vec3 topColor;
   uniform vec3 bottomColor;
@@ -59,7 +62,7 @@ export const threejs_component = (() => {
   
         gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
       #endif`;
-      
+
       THREE.ShaderChunk.fog_pars_fragment = `
       #ifdef USE_FOG
         uniform float fogTime;
@@ -72,44 +75,122 @@ export const threejs_component = (() => {
           uniform float fogFar;
         #endif
       #endif`;
-      
+
       THREE.ShaderChunk.fog_vertex = `
       #ifdef USE_FOG
         vWorldPosition = (modelMatrix * vec4(transformed, 1.0 )).xyz;
       #endif`;
-      
+
       THREE.ShaderChunk.fog_pars_vertex = `
       #ifdef USE_FOG
         varying vec3 vWorldPosition;
       #endif`;
-  
-      this.threejs_ = new THREE.WebGLRenderer({
+
+      console.log("COMPONENT STARTED");
+
+      JayState.renderer = new THREE.WebGLRenderer({
         antialias: false,
       });
-      this.threejs_.outputEncoding = THREE.sRGBEncoding;
-      this.threejs_.gammaFactor = 2.2;
-      this.threejs_.shadowMap.enabled = true;
-      this.threejs_.shadowMap.type = THREE.PCFSoftShadowMap;
-      this.threejs_.setPixelRatio(window.devicePixelRatio);
-      this.threejs_.setSize(window.innerWidth, window.innerHeight);
-      this.threejs_.domElement.id = 'threejs';
-  
-      document.getElementById('container').appendChild(this.threejs_.domElement);
-  
-      window.addEventListener('resize', () => {
-        this._OnWindowResize();
-      }, false);
-  
+      JayState.renderer.outputEncoding = THREE.sRGBEncoding;
+      JayState.renderer.gammaFactor = 2.2;
+      JayState.renderer.shadowMap.enabled = true;
+      JayState.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      JayState.renderer.setPixelRatio(window.devicePixelRatio);
+      JayState.renderer.setSize(window.innerWidth, window.innerHeight);
+      JayState.renderer.domElement.id = 'threejs';
+      // this.threejs_ = new THREE.WebGLRenderer({
+      //   antialias: false,
+      // });
+      // this.threejs_.outputEncoding = THREE.sRGBEncoding;
+      // this.threejs_.gammaFactor = 2.2;
+      // this.threejs_.shadowMap.enabled = true;
+      // this.threejs_.shadowMap.type = THREE.PCFSoftShadowMap;
+      // this.threejs_.setPixelRatio(window.devicePixelRatio);
+      // this.threejs_.setSize(window.innerWidth, window.innerHeight);
+      // this.threejs_.domElement.id = 'threejs';
+
+      document.getElementById('container').appendChild(JayState.renderer.domElement);
+
+      // window.addEventListener('resize', () => {
+      //   this._OnWindowResize();
+      // }, false);
+
       const fov = 60;
       const aspect = 1920 / 1080;
       const near = 1.0;
       const far = 10000.0;
       this.camera_ = new THREE.PerspectiveCamera(fov, aspect, near, far);
       this.camera_.position.set(25, 10, 25);
-  
+
+      // JayState.pointerControls = new PointerLockControls(this.camera_, JayState.renderer.domElement);
+      // JayState.pointerControls.pointerSpeed = 0.0;
+
+
+
+      // fakeCamera = this.camera_.clone();
+      // JayState.orbitControls = new THREE.OrbitControls(fakeCamera, renderer.domElement);
+      // JayState.orbitControls.enablePan = false;
+      // JayState.orbitControls.enableDamping = false;
+
+
+
+      // JayState.orbitControls = new TrackballControls(this.camera_, JayState.renderer.domElement);
+
+      // JayState.orbitControls.rotateSpeed = 1.0;
+      // JayState.orbitControls.zoomSpeed = 1.2;
+      // JayState.orbitControls.panSpeed = 0.8;
+
+
+      
+      // JayState.orbitControls = new OrbitControls(this.camera_, JayState.renderer.domElement);
+      // JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+      // JayState.orbitControls.dampingFactor = 0.05;
+
+      // JayState.orbitControls.screenSpacePanning = false;
+
+      // JayState.orbitControls.minDistance = 100;
+      // JayState.orbitControls.maxDistance = 500;
+
+      // JayState.orbitControls.maxPolarAngle = Math.PI / 2;
+
+
+
+      // JayState.orbitControls = new OrbitControls(this.camera_, JayState.renderer.domElement);
+      // JayState.orbitControls.enablePan = true;
+      // JayState.orbitControls.enableDamping = true
+      // JayState.orbitControls.dampingFactor = 0.05
+      // JayState.orbitControls.screenSpacePanning = false
+      // JayState.orbitControls.minDistance = 1
+      // JayState.orbitControls.maxDistance = 1000
+      // JayState.orbitControls.maxPolarAngle = Math.PI / 2
+
+
+      
+      // JayState.renderer.domElement.requestFullscreen();
+      // JayState.pointerControls.lock();
+
+      document.body.addEventListener('click', function () {
+        // JayState.pointerControls.lock();
+        JayState.renderer.domElement.requestPointerLock()
+        if (typeof(JayState.renderer.domElement) !== 'undefined') {
+          JayState.renderer.domElement.requestFullscreen();
+        }
+      }, false);
+      
+      // controls.addEventListener('lock', function () {
+      //     // ...
+      // });
+      // controls.addEventListener('unlock', function () {
+      //     // ...
+      // });
+      // controls.addEventListener('drag', function (event) {
+      //     var distance = event.distance;
+      //     console.log(distance);
+      // });
+
       this.scene_ = new THREE.Scene();
       this.scene_.fog = new THREE.FogExp2(0x89b2eb, 0.00002);
-  
+
       let light = new THREE.DirectionalLight(0x8088b3, 0.7);
       light.position.set(-10, 500, 10);
       light.target.position.set(0, 0, 0);
@@ -124,7 +205,7 @@ export const threejs_component = (() => {
       light.shadow.camera.top = 100;
       light.shadow.camera.bottom = -100;
       this.scene_.add(light);
-  
+
       this.sun_ = light;
 
       this.LoadSky_();
@@ -135,19 +216,19 @@ export const threejs_component = (() => {
       // hemiLight.color.setHSL(0.6, 1, 0.4);
       // hemiLight.groundColor.setHSL(0.095, 1, 0.5);
       this.scene_.add(hemiLight);
-  
-  
+
+
       const loader = new THREE.CubeTextureLoader();
       const texture = loader.load([
-          './resources/terrain/space-posx.jpg',
-          './resources/terrain/space-negx.jpg',
-          './resources/terrain/space-posy.jpg',
-          './resources/terrain/space-negy.jpg',
-          './resources/terrain/space-posz.jpg',
-          './resources/terrain/space-negz.jpg',
+        './resources/terrain/space-posx.jpg',
+        './resources/terrain/space-negx.jpg',
+        './resources/terrain/space-posy.jpg',
+        './resources/terrain/space-negy.jpg',
+        './resources/terrain/space-posz.jpg',
+        './resources/terrain/space-negz.jpg',
       ]);
       texture.encoding = THREE.sRGBEncoding;
-  
+
       const uniforms = {
         "topColor": { value: new THREE.Color(0x000000) },
         "bottomColor": { value: new THREE.Color(0x5d679e) },
@@ -156,18 +237,18 @@ export const threejs_component = (() => {
         "background": { value: texture },
       };
       // uniforms["topColor"].value.copy(hemiLight.color);
-  
+
       this.scene_.fog.color.copy(uniforms["bottomColor"].value);
-  
-  
+
+
       const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
       const skyMat = new THREE.ShaderMaterial({
-          uniforms: uniforms,
-          vertexShader: _VS,
-          fragmentShader: _FS,
-          side: THREE.BackSide
+        uniforms: uniforms,
+        vertexShader: _VS,
+        fragmentShader: _FS,
+        side: THREE.BackSide
       });
-  
+
       const sky = new THREE.Mesh(skyGeo, skyMat);
       this.scene_.add(sky);
     }
@@ -178,7 +259,7 @@ export const threejs_component = (() => {
         return;
       }
       const pos = player._position;
-  
+
       this.sun_.position.copy(pos);
       this.sun_.position.add(new THREE.Vector3(-50, 200, -10));
       this.sun_.target.position.copy(pos);
@@ -188,6 +269,6 @@ export const threejs_component = (() => {
   }
 
   return {
-      ThreeJSController: ThreeJSController,
+    ThreeJSController: ThreeJSController,
   };
 })();

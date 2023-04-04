@@ -1,5 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
+import JayState from './state.js';
+
 
 export const textures = (function() {
 
@@ -18,7 +20,6 @@ export const textures = (function() {
   return {
     TextureAtlas: class {
       constructor(params) {
-        this._threejs = params.threejs;
         this._Create();
         this.onLoad = () => {};
       }
@@ -69,7 +70,7 @@ export const textures = (function() {
           diffuse.wrapT = THREE.RepeatWrapping;
           diffuse.generateMipmaps = true;
 
-          const caps = this._threejs.capabilities;
+          const caps = JayState.renderer.capabilities;
           const aniso = caps.getMaxAnisotropy();
 
           diffuse.anisotropy = 4;

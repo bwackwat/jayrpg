@@ -1,6 +1,8 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+
 import {entity} from './entity.js';
 
+import JayState from './state.js';
 
 export const third_person_camera = (() => {
   
@@ -16,8 +18,10 @@ export const third_person_camera = (() => {
     }
 
     _CalculateIdealOffset() {
-      const idealOffset = new THREE.Vector3(-0, 10, -15);
-      idealOffset.applyQuaternion(this._params.target._rotation);
+      const zoom = 5.0;
+      const idealOffset = new THREE.Vector3(0.0, 10.0 * zoom, -15.0 * zoom);
+
+      // idealOffset.applyQuaternion(this._params.target._rotation);
       idealOffset.add(this._params.target._position);
 
       const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
@@ -28,7 +32,7 @@ export const third_person_camera = (() => {
 
     _CalculateIdealLookat() {
       const idealLookat = new THREE.Vector3(0, 5, 20);
-      idealLookat.applyQuaternion(this._params.target._rotation);
+      // idealLookat.applyQuaternion(this._params.target._rotation);
       idealLookat.add(this._params.target._position);
       return idealLookat;
     }

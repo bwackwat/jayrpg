@@ -250,6 +250,8 @@ class BasicCharacterController {
   }
 
   Update(timeInSeconds) {
+    console.log("Main Update");
+
     if (!this.stateMachine_.currentState_) {
       return;
     }
@@ -288,6 +290,7 @@ class BasicCharacterController {
     if (this._input._keys.backward) {
       velocity.z -= acc.z * timeInSeconds;
     }
+
     if (this._input._keys.left) {
       _A.set(0, 1, 0);
       _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this.acceleration_.y);
@@ -919,6 +922,8 @@ class BasicMMODemo {
   }
 
   _Initialize() {
+    console.log("DEMO STARTED");
+
     this.threejs_ = new THREE.WebGLRenderer({
       antialias: true,
     });

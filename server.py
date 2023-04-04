@@ -11,7 +11,6 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
         self.send_header('Cross-Origin-Resource-Policy', "'cross-origin' always")
         self.send_header('Cross-Origin-Opener-Policy', "same-origin")
         self.send_header('Cross-Origin-Embedder-Policy', "require-corp")
-        # self.send_header('Access-Control-Allow-Origin', '*')
         SimpleHTTPRequestHandler.end_headers(self)
 
 if __name__ == '__main__':

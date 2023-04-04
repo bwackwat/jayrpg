@@ -3,6 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.mod
 import {entity} from './entity.js';
 import {finite_state_machine} from './finite-state-machine.js';
 import {player_state} from './player-state.js';
+import JayState from './state.js';
 
 import {defs} from '/shared/defs.mjs';
 
@@ -47,10 +48,15 @@ export const player_entity = (() => {
     }
 
     Init_() {
-      this.decceleration_ = new THREE.Vector3(-0.0005, -0.0001, -5.0);
-      this.acceleration_ = new THREE.Vector3(1, 0.125, 100.0);
+      // CUSTOM
+      this.decceleration_ = new THREE.Vector3(-5.0, -0.0001, -5.0);
+      this.acceleration_ = new THREE.Vector3(60.0, 0.125, 60.0);
+      // this.decceleration_ = new THREE.Vector3(-0.0005, -0.0001, -5.0);
+      // this.acceleration_ = new THREE.Vector3(1, 0.125, 100.0);
       this.velocity_ = new THREE.Vector3(0, 0, 0);
       this.group_ = new THREE.Group();
+
+      this.facing = 0.0;
 
       this.params_.scene.add(this.group_);
 
@@ -182,6 +188,8 @@ export const player_entity = (() => {
     }
 
     Update(timeInSeconds) {
+      // console.log("Player Update");
+
       if (!this.stateMachine_) {
         return;
       }
@@ -215,6 +223,10 @@ export const player_entity = (() => {
       frameDecceleration.multiplyScalar(timeInSeconds);
       frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
           Math.abs(frameDecceleration.z), Math.abs(velocity.z));
+      
+      // CUSTOM
+      frameDecceleration.x = Math.sign(frameDecceleration.x) * Math.min(
+        Math.abs(frameDecceleration.x), Math.abs(velocity.x));
   
       velocity.add(frameDecceleration);
   
@@ -222,27 +234,72 @@ export const player_entity = (() => {
       const _Q = new THREE.Quaternion();
       const _A = new THREE.Vector3();
       const _R = controlObject.quaternion.clone();
+      
+      let rotation = controlObject.quaternion.clone();
   
       const acc = this.acceleration_.clone();
       if (input._keys.shift) {
         acc.multiplyScalar(2.0);
       }
-  
-      if (input._keys.forward) {
-        velocity.z += acc.z * timeInSeconds;
-      }
-      if (input._keys.backward) {
-        velocity.z -= acc.z * timeInSeconds;
-      }
-      if (input._keys.left) {
+
+      // CUSTOM
+      if (JayState.controlScheme == 0){
+        if (input._keys.forward) {
+          velocity.z += acc.z * timeInSeconds;
+        }
+        if (input._keys.backward) {
+          velocity.z -= acc.z * timeInSeconds;
+        }
+
+        if (input._keys.left) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this.acceleration_.y);
+          _R.multiply(_Q);
+        }
+        if (input._keys.right) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this.acceleration_.y);
+          _R.multiply(_Q);
+        }
+      }else{
         _A.set(0, 1, 0);
-        _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this.acceleration_.y);
-        _R.multiply(_Q);
-      }
-      if (input._keys.right) {
-        _A.set(0, 1, 0);
-        _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this.acceleration_.y);
-        _R.multiply(_Q);
+        if (input._keys.forward){
+          velocity.z += acc.z * timeInSeconds;
+
+          if (input._keys.left){
+            // velocity.x += acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 4.0).clone();
+          } else if (input._keys.right){
+            // velocity.x -= acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 4.0).clone();
+          } else {
+            rotation = _Q.setFromAxisAngle(_A, this.facing).clone();
+          }
+
+        } else if (input._keys.backward){
+          velocity.z += acc.z * timeInSeconds;
+
+          if (input._keys.left){
+            // velocity.x += acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing + 3.0 * Math.PI / 4.0).clone();
+          } else if (input._keys.right){
+            // velocity.x -= acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing - 3.0 * Math.PI / 4.0).clone();
+          }else{
+            rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI).clone();
+          }
+
+        } else if (input._keys.left){
+          velocity.z += acc.z * timeInSeconds;
+          
+          // velocity.x += acc.x * timeInSeconds;
+          rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 2.0).clone();
+        } else if (input._keys.right){
+          velocity.z += acc.z * timeInSeconds;
+
+          // velocity.x -= acc.x * timeInSeconds;
+          rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 2.0).clone();
+        }
       }
   
       controlObject.quaternion.copy(_R);
@@ -276,7 +333,14 @@ export const player_entity = (() => {
       controlObject.position.copy(pos);
   
       this.Parent.SetPosition(controlObject.position);
-      this.Parent.SetQuaternion(controlObject.quaternion);
+      // JayState.orbitControls.target.copy(controlObject.position);
+      // JayState.orbitControls.update();
+
+      if (JayState.controlScheme == 0){
+        this.Parent.SetQuaternion(controlObject.quaternion);
+      }else{
+        this.Parent.SetQuaternion(rotation);
+      }
     }
   };
   
@@ -285,5 +349,4 @@ export const player_entity = (() => {
       BasicCharacterControllerProxy: BasicCharacterControllerProxy,
       BasicCharacterController: BasicCharacterController,
   };
-
 })();

@@ -14,7 +14,7 @@ import {inventory_controller} from './inventory-controller.js';
 import {spatial_hash_grid} from '/shared/spatial-hash-grid.mjs';
 import {defs} from '/shared/defs.mjs';
 import {threejs_component} from './threejs_component.js';
-
+import JayState from './state.js';
 
 
 class CrappyMMOAttempt {
@@ -47,19 +47,20 @@ class CrappyMMOAttempt {
   CreateGUI_() {
     this._guiParams = {
       general: {
-        alternate_contols: false
+        alternate_controls: JayState.controlScheme == 1
       },
     };
     this._gui = new GUI();
 
     const generalRollup = this._gui.addFolder('General');
-    // noiseRollup.add(params.guiParams.biomes, "scale", 64.0, 4096.0).onChange(
-    //     onNoiseChanged);
-    // generalRollup.add(params.guiParams.general, "alternate_contols").onChange(() => {
-    //   for (let k in this._chunks) {
-    //     this._chunks[k].chunk._plane.material.wireframe = params.guiParams.terrain.wireframe;
-    //   }
-    // });
+    // CUSTOM
+    generalRollup.add(this._guiParams.general, "alternate_controls").onChange(() => {
+      if (this._guiParams.general.alternate_controls) {
+        JayState.controlScheme = 1;
+      }else{
+        JayState.controlScheme = 0;
+      }
+    });
     this._gui.close();
   }
 
@@ -71,7 +72,6 @@ class CrappyMMOAttempt {
     // Hack
     this.scene_ = threejs.GetComponent('ThreeJSController').scene_;
     this.camera_ = threejs.GetComponent('ThreeJSController').camera_;
-    this.threejs_ = threejs.GetComponent('ThreeJSController').threejs_;
 
     const ui = new entity.Entity();
     ui.AddComponent(new ui_controller.UIController());
@@ -86,8 +86,7 @@ class CrappyMMOAttempt {
         scene: this.scene_,
         target: 'player',
         gui: this._gui,
-        guiParams: this._guiParams,
-        threejs: this.threejs_,
+        guiParams: this._guiParams
     }));
     this.entityManager_.Add(t, 'terrain');
 
@@ -144,7 +143,9 @@ class CrappyMMOAttempt {
   _OnWindowResize() {
     this.camera_.aspect = window.innerWidth / window.innerHeight;
     this.camera_.updateProjectionMatrix();
-    this.threejs_.setSize(window.innerWidth, window.innerHeight);
+    // this.threejs_.setSize(window.innerWidth, window.innerHeight);
+    JayState.renderer.setSize(window.innerWidth, window.innerHeight);
+    // JayState.orbitControls.handleResize();
   }
 
   RAF_() {
@@ -153,7 +154,7 @@ class CrappyMMOAttempt {
         this.previousRAF_ = t;
       }
 
-      this.threejs_.render(this.scene_, this.camera_);
+      JayState.renderer.render(this.scene_, this.camera_);
       this.Step_(t - this.previousRAF_);
       this.previousRAF_ = t;
 

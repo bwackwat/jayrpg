@@ -193,7 +193,7 @@ export const player_state = (() => {
         return;
       }
   
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.left || input._keys.right) {
         if (input._keys.shift) {
           this._parent.SetState('run');
         }
@@ -245,7 +245,7 @@ export const player_state = (() => {
         return;
       }
 
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.left || input._keys.right) {
         if (!input._keys.shift) {
           this._parent.SetState('walk');
         }
@@ -289,7 +289,7 @@ export const player_state = (() => {
         return;
       }
   
-      if (input._keys.forward || input._keys.backward) {
+      if (input._keys.forward || input._keys.backward || input._keys.left || input._keys.right) {
         this._parent.SetState('walk');
       } else if (input._keys.space) {
         this._parent.SetState('attack');
