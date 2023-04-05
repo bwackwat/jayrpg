@@ -36,8 +36,18 @@ export const player_input = (() => {
       this._raycaster = new THREE.Raycaster();
       document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
-      document.addEventListener('mouseup', (e) => this._onMouseUp(e), false);
-      document.addEventListener('mousedown', (e) => this._onMouseDown(e), false);
+      document.addEventListener('pointerup', (e) => this._onMouseUp(e), false);
+      document.addEventListener('pointerdown', (e) => this._onMouseDown(e), false);
+      // document.addEventListener('blur', function () {
+      //   console.log("FOCUS LOST");
+      //   this._keys.forward = false;
+      //   this._keys.left = false;
+      //   this._keys.backward = false;
+      //   this._keys.right = false;
+      //   this._keys.space = false;
+      //   this._keys.shift = false;
+      //   this._keys.backspace = false;
+      // }, false);
     }
 
     _onMouseDown(event) {
@@ -47,6 +57,8 @@ export const player_input = (() => {
       }else if(event.button === 2){
         JayState.rightMouseDown = true;
       }
+      // console.log(JayState.leftMouseDown);
+      // console.log(JayState.rightMouseDown);
     }
   
     _onMouseUp(event) {
@@ -94,12 +106,18 @@ export const player_input = (() => {
         JayState.rightMouseDown = false;
         // JayState.pointerControls.pointerSpeed = 0.0;
       }
+      // console.log(JayState.leftMouseDown);
+      // console.log(JayState.rightMouseDown);
     }
 
     _onKeyDown(event) {
       event.preventDefault();
       if(!JayState.keys[event.keyCode]){
         JayState.keys[event.keyCode] = true;
+      }
+
+      if (event.keyCode === 9){
+        document.exitPointerLock();
       }
 
       if (event.currentTarget.activeElement != document.body) {

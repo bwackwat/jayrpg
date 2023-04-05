@@ -260,6 +260,17 @@ export const player_entity = (() => {
         }
       }else{
         _A.set(0, 1, 0);
+
+        if(JayState.rightMouseDown){
+          var vector = new THREE.Vector3(); // create once and reuse it!
+          JayState.camera.getWorldDirection( vector );
+          var theta = Math.atan2(vector.x, vector.z);
+          
+          this.facing = theta;
+          // this.facing = JayState.orbitControls.getAzimuthalAngle() + Math.PI;
+        }
+        // console.log(this.facing);
+
         if (input._keys.forward){
           velocity.z += acc.z * timeInSeconds;
 
@@ -315,7 +326,7 @@ export const player_entity = (() => {
       // sideways.multiplyScalar(velocity.x * timeInSeconds);
       forward.multiplyScalar(velocity.z * timeInSeconds);
   
-      const pos = controlObject.position.clone();
+      let pos = controlObject.position.clone();
       pos.add(forward);
       // pos.add(sideways);
 
@@ -327,21 +338,37 @@ export const player_entity = (() => {
       const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
       pos.y = terrain.GetHeight(pos)[0];
 
+      if (JayState.keys[32] && !JayState.jump && JayState.yVelocity === 0.0){
+        JayState.jump = true;
+        JayState.yVelocity = 1.6;
+        this.stateMachine_.SetState('run');
+      }
+      if (JayState.jump){
+        JayState.yVelocity -= 0.2;
+      }
+      if (JayState.yOffset < 0.0){
+        JayState.yVelocity = 0.0;
+        JayState.yOffset = 0.0;
+        JayState.jump = false;
+      }
+      JayState.yOffset += JayState.yVelocity;
+      pos.y += JayState.yOffset;
+
+      JayState.lastPosition = pos.clone();
+
+      var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
+      var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
+      let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
+      JayState.camera.position.set( x, y, z );
+      JayState.camera.lookAt(JayState.lastPosition);
+
       controlObject.position.copy(pos);
   
       this.Parent.SetPosition(controlObject.position);
 
-      let cameraTarget = controlObject.position.clone().add(new THREE.Vector3(0.0, 8.0, 0.0));
-      JayState.orbitControls.target.copy(cameraTarget);
-      // JayState.camera.position.add(new THREE.Vector3(cameraTarget.x, 8.0, cameraTarget.y));
-
-      // const dist = JayState.camera.position.distanceTo(cameraTarget);
-      // if (dist < 110) {
-      //   const dir = JayState.camera.position.clone().sub(cameraTarget).normalize();
-      //   JayState.camera.position.copy(cameraTarget.clone().add(dir.multiplyScalar(110)));
-      // }
-
-      JayState.orbitControls.update();
+      // let cameraTarget = controlObject.position.clone().add(new THREE.Vector3(0.0, 8.0, 0.0));
+      // JayState.orbitControls.target.copy(cameraTarget);
+      // JayState.orbitControls.update();
 
       if (JayState.controlScheme == 0){
         this.Parent.SetQuaternion(controlObject.quaternion);

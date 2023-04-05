@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+import JayState from './state.js';
 
 
 export const player_state = (() => {
@@ -200,7 +201,9 @@ export const player_state = (() => {
         return;
       }
   
-      this._parent.SetState('idle');
+      if (!JayState.jump){
+        this._parent.SetState('idle');
+      }
     }
   };
   
@@ -252,7 +255,9 @@ export const player_state = (() => {
         return;
       }
   
-      this._parent.SetState('idle');
+      if (!JayState.jump){
+        this._parent.SetState('idle');
+      }
     }
   };
   
@@ -288,11 +293,18 @@ export const player_state = (() => {
       if (!input) {
         return;
       }
+
+      if (JayState.leftMouseDown && JayState.pointerLocked){
+        this._parent.SetState('attack');
+      }
   
       if (input._keys.forward || input._keys.backward || input._keys.left || input._keys.right) {
         this._parent.SetState('walk');
-      } else if (input._keys.space) {
-        this._parent.SetState('attack');
+      // } else if (input._keys.space) {
+      //   if (JayState.jump === false){
+      //     JayState.jump = true;
+      //     this._parent.SetState('run');
+      //   }
       } else if (input._keys.backspace) {
         this._parent.SetState('dance');
       }

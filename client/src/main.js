@@ -1,19 +1,19 @@
-import {GUI} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/libs/lil-gui.module.min.js';
+import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/libs/lil-gui.module.min.js';
 
-import {entity_manager} from './entity-manager.js';
-import {entity} from './entity.js';
-import {ui_controller} from './ui-controller.js';
-import {level_up_component} from './level-up-component.js';
-import {network_controller} from './network-controller.js';
-import {scenery_controller} from './scenery-controller.js';
-import {load_controller} from './load-controller.js';
-import {spawners} from './spawners.js';
-import {terrain} from './terrain.js';
-import {inventory_controller} from './inventory-controller.js';
+import { entity_manager } from './entity-manager.js';
+import { entity } from './entity.js';
+import { ui_controller } from './ui-controller.js';
+import { level_up_component } from './level-up-component.js';
+import { network_controller } from './network-controller.js';
+import { scenery_controller } from './scenery-controller.js';
+import { load_controller } from './load-controller.js';
+import { spawners } from './spawners.js';
+import { terrain } from './terrain.js';
+import { inventory_controller } from './inventory-controller.js';
 
-import {spatial_hash_grid} from '/shared/spatial-hash-grid.mjs';
-import {defs} from '/shared/defs.mjs';
-import {threejs_component} from './threejs_component.js';
+import { spatial_hash_grid } from '/shared/spatial-hash-grid.mjs';
+import { defs } from '/shared/defs.mjs';
+import { threejs_component } from './threejs_component.js';
 import JayState from './state.js';
 
 
@@ -35,7 +35,7 @@ class CrappyMMOAttempt {
     this.CreateGUI_();
 
     this.grid_ = new spatial_hash_grid.SpatialHashGrid(
-        [[-1000, -1000], [1000, 1000]], [100, 100]);
+      [[-1000, -1000], [1000, 1000]], [100, 100]);
 
     this.LoadControllers_();
     this.LoadPlayer_();
@@ -56,7 +56,7 @@ class CrappyMMOAttempt {
     generalRollup.add(this._guiParams.general, "alternate_controls").onChange(() => {
       if (this._guiParams.general.alternate_controls) {
         JayState.controlScheme = 1;
-      }else{
+      } else {
         JayState.controlScheme = 0;
       }
     });
@@ -80,12 +80,13 @@ class CrappyMMOAttempt {
     this.entityManager_.Add(network, 'network');
 
     const t = new entity.Entity();
-    t.AddComponent(new terrain.TerrainChunkManager({
-        scene: this.scene_,
-        target: 'player',
-        gui: this._gui,
-        guiParams: this._guiParams
-    }));
+    JayState.terrain = new terrain.TerrainChunkManager({
+      scene: this.scene_,
+      target: 'player',
+      gui: this._gui,
+      guiParams: this._guiParams
+    });
+    t.AddComponent(JayState.terrain);
     this.entityManager_.Add(t, 'terrain');
 
     const l = new entity.Entity();
@@ -94,19 +95,19 @@ class CrappyMMOAttempt {
 
     const scenery = new entity.Entity();
     scenery.AddComponent(new scenery_controller.SceneryController({
-        scene: this.scene_,
-        grid: this.grid_,
+      scene: this.scene_,
+      grid: this.grid_,
     }));
     this.entityManager_.Add(scenery, 'scenery');
 
     const spawner = new entity.Entity();
     spawner.AddComponent(new spawners.PlayerSpawner({
-        grid: this.grid_,
-        scene: this.scene_,
+      grid: this.grid_,
+      scene: this.scene_,
     }));
     spawner.AddComponent(new spawners.NetworkEntitySpawner({
-        grid: this.grid_,
-        scene: this.scene_,
+      grid: this.grid_,
+      scene: this.scene_,
     }));
     this.entityManager_.Add(spawner, 'spawners');
 
@@ -118,7 +119,7 @@ class CrappyMMOAttempt {
     // HACK
     for (let k in defs.WEAPONS_DATA) {
       database.GetComponent('InventoryDatabaseController').AddItem(
-          k, defs.WEAPONS_DATA[k]);
+        k, defs.WEAPONS_DATA[k]);
     }
   }
 
@@ -129,7 +130,7 @@ class CrappyMMOAttempt {
 
     const levelUpSpawner = new entity.Entity();
     levelUpSpawner.AddComponent(new level_up_component.LevelUpComponentSpawner({
-        scene: this.scene_,
+      scene: this.scene_,
     }));
     this.entityManager_.Add(levelUpSpawner, 'level-up-spawner');
   }

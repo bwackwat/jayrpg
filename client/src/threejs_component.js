@@ -103,7 +103,6 @@ export const threejs_component = (() => {
       JayState.renderer.shadowMap.enabled = true;
       JayState.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       JayState.renderer.setPixelRatio(window.devicePixelRatio);
-      JayState.renderer.setSize(window.innerWidth, window.innerHeight);
       JayState.renderer.domElement.id = 'threejs';
 
       document.getElementById('container').appendChild(JayState.renderer.domElement);
@@ -117,28 +116,89 @@ export const threejs_component = (() => {
       const near = 1.0;
       const far = 10000.0;
       JayState.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      this._OnWindowResize();
       JayState.camera.position.set(25, 10, 25);
-
       
-      JayState.orbitControls = new OrbitControls(JayState.camera, document.body);
-      JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-      JayState.orbitControls.dampingFactor = 0.1;
+      // JayState.orbitControls = new OrbitControls(JayState.camera, document.body);
+      // JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+      // JayState.orbitControls.dampingFactor = 0.1;
 
-      JayState.orbitControls.enablePan = false;
+      // JayState.orbitControls.enablePan = false;
+      // JayState.orbitControls.enableKeys = false;
 
-      JayState.orbitControls.minDistance = 10;
-      JayState.orbitControls.maxDistance = 50;
+      // JayState.orbitControls.minDistance = 10;
+      // JayState.orbitControls.maxDistance = 50;
 
-      JayState.orbitControls.maxPolarAngle = Math.PI / 2;
+      // JayState.orbitControls.maxPolarAngle = Math.PI / 2;
 
-      JayState.orbitControls.mouseButtons = { LEFT: null, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
+      // JayState.orbitControls.mouseButtons = { LEFT: MOUSE.NONE, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
+
+      function moveCallback(event) {
+        if (JayState.rightMouseDown) {
+            // var deltaX = event.clientX - JayState.mouseX;
+            // var deltaY = event.clientY - JayState.mouseY;
+
+            // mesh.rotation.y += deltaX / 100;
+            // mesh.rotation.x += deltaY / 100;
+            // console.log(deltaX, deltaY);
+            // console.log(event.movementX, event.movementY);
+
+            // JayState.camera.position.applyQuaternion(
+            //   new THREE.Quaternion().setFromAxisAngle(
+            //     new THREE.Vector3(0, 1, 0),
+            //     // The positive y-axis
+            //     Math.PI / 200.0 * event.movementX // The amount of rotation to apply this time
+            //   )
+            // );
+            JayState.cameraAngle -= Math.PI / 2000.0 * event.movementX;
+            
+            var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
+            var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
+            let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
+
+            JayState.camera.position.set( x, y, z );
+            JayState.camera.lookAt(JayState.lastPosition);
+        }
+
+        // JayState.mouseX = event.clientX;
+        // JayState.mouseY = event.clientY;
+      }
+
+      document.addEventListener('pointerlockchange', function () {
+        if (document.pointerLockElement === document.body ||
+            document.mozPointerLockElement === document.body) {
+          console.log('The pointer lock status is now locked');
+          JayState.message('Locked');
+          JayState.pointerLocked = true;
+          document.body.addEventListener("mousemove", moveCallback, true);
+        } else {
+          console.log('The pointer lock status is now unlocked');
+          JayState.pointerLocked = false;
+          document.body.removeEventListener("mousemove", moveCallback, true);
+        }
+      }, false)
 
       document.body.addEventListener('click', function () {
-        // document.body.requestPointerLock();
+        if(!JayState.pointerLocked){
+          document.body.requestPointerLock();
+        }
         if (typeof(JayState.renderer.domElement) !== 'undefined') {
           document.body.requestFullscreen();
         }
       }, false);
+
+      // JayState.renderer.domElement.addEventListener("mousemove", function(event) {
+      //   // if (mouseDown) {
+      //       var deltaX = event.clientX - JayState.mouseX;
+      //       var deltaY = event.clientY - JayState.mouseY;
+
+      //       // mesh.rotation.y += deltaX / 100;
+      //       // mesh.rotation.x += deltaY / 100;
+      //   // }
+
+      //   JayState.mouseX = event.clientX;
+      //   JayState.mouseY = event.clientY;
+      // });
       
       // controls.addEventListener('lock', function () {
       //     // ...
@@ -202,7 +262,6 @@ export const threejs_component = (() => {
       // uniforms["topColor"].value.copy(hemiLight.color);
 
       this.scene_.fog.color.copy(uniforms["bottomColor"].value);
-
 
       const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
       const skyMat = new THREE.ShaderMaterial({
