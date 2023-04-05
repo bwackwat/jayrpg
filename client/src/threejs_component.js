@@ -183,7 +183,9 @@ export const threejs_component = (() => {
           document.body.requestPointerLock();
         }
         if (typeof(JayState.renderer.domElement) !== 'undefined') {
-          document.body.requestFullscreen();
+          if(window.innerWidth !== screen.width || window.innerHeight !== screen.height){
+            document.body.requestFullscreen();
+          }
         }
       }, false);
 

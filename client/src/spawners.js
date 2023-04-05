@@ -1,6 +1,5 @@
 import {entity} from './entity.js';
 
-import {third_person_camera} from './third-person-camera.js';
 import {player_entity} from './player-entity.js'
 import {health_component} from './health-component.js';
 import {player_input} from './player-input.js';
@@ -57,9 +56,6 @@ export const spawners = (() => {
               {grid: this.params_.grid}));
       player.AddComponent(
           new attack_controller.AttackController());
-      player.AddComponent(
-          new third_person_camera.ThirdPersonCamera({
-              target: player}));
       player.AddComponent(
           new network_player_controller.NetworkEntityController({
               target: player}));

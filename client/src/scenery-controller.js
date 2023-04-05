@@ -1,6 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
 
 import {entity} from './entity.js';
+import JayState from './state.js';
 import {render_component} from './render-component.js';
 import {spatial_grid_controller} from './spatial-grid-controller.js';
 
@@ -227,7 +228,7 @@ export const scenery_controller = (() => {
 
       const _P = new THREE.Vector3();
       const _V = new THREE.Vector3();
-      const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
+      // const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
 
       for (let x = -10; x <= 10; ++x) {
         for (let y = -10; y <= 10; ++y) {
@@ -244,9 +245,9 @@ export const scenery_controller = (() => {
           
           _P.x += (this.noise_.Get(_P.x, 0.0, _P.z) * 2.0 - 1.0) * 25.0;
           _P.z += (this.noise_.Get(_P.x, 1.0, _P.z) * 2.0 - 1.0) * 25.0;
-          _P.y = terrain.GetHeight(_P)[0];
+          _P.y = JayState.terrain.GetHeight(_P)[0];
 
-          const biome = this.FindBiome_(terrain, _P);
+          const biome = this.FindBiome_(JayState.terrain, _P);
 
           const roll = this.noise_.Get(_V.x, 2.0, _V.z);
           if (roll > _BIOMES[biome]) {

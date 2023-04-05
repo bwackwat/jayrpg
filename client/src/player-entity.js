@@ -335,8 +335,8 @@ export const player_entity = (() => {
         return;
       }
 
-      const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
-      pos.y = terrain.GetHeight(pos)[0];
+      // const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
+      pos.y = JayState.terrain.GetHeight(pos)[0];
 
       if (JayState.keys[32] && !JayState.jump && JayState.yVelocity === 0.0){
         JayState.jump = true;
