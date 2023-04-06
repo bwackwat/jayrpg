@@ -4,7 +4,7 @@ import {entity} from './entity.js';
 
 import {defs} from '/shared/defs.mjs';
 
-import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/loaders/FBXLoader.js';
+import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/loaders/FBXLoader.js';
 
 
 export const equip_weapon_component = (() => {

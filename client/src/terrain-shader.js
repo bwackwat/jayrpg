@@ -423,6 +423,20 @@ vec4 _TriplanarN(vec3 pos, vec3 normal, float texSlice, sampler2DArray tex) {
   return vec4(worldNormal, 0.0);
 }
 
+// vec4 toLinear(vec4 sRGB)
+// {
+// 	bvec4 cutoff = lessThan(sRGB, vec4(0.04045));
+// 	vec4 higher = pow((sRGB + vec4(0.055))/vec4(1.055), vec4(2.4));
+// 	vec4 lower = sRGB/vec4(12.92);
+
+// 	return mix(higher, lower, cutoff);
+// }
+
+// https://github.com/mrdoob/three.js/blob/r116/src/renderers/shaders/ShaderChunk/encodings_pars_fragment.glsl.js
+vec4 toLinear( in vec4 value ) {
+	return vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.a );
+}
+
   `;
   
     const _PS_2 = `
@@ -457,12 +471,17 @@ vec4 _TriplanarN(vec3 pos, vec3 normal, float texSlice, sampler2DArray tex) {
   
   vec4 diffuseBlended = _TerrainBlend_4(diffuseSamples);
   // vec4 normalBlended = _TerrainBlend_4(normalSamples);
-  diffuseColor = sRGBToLinear(diffuseBlended);
+  // diffuseColor = sRGBToLinear(diffuseBlended);
+  diffuseColor = toLinear(diffuseBlended);
+  // diffuseColor = toToLinear(diffuseBlended);
+  // diffuseColor = (vec4(vec3(diffuseBlended), 0.0));
+  // diffuseColor = diffuseBlended;
+  
   // normal = normalBlended.xyz;
 }
 
     `;
-
+    
     return {
       VS: _VS,
       PS: _PS,

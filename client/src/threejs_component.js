@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
 // import { MOUSE } from 'three';
-// import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/TrackballControls.js';
-// import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/PointerLockControls.js';
-// import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/OrbitControls.js';
+// import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/controls/TrackballControls.js';
+// import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/controls/PointerLockControls.js';
+// import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/controls/OrbitControls.js';
 
 import { entity } from "./entity.js";
 
@@ -265,7 +265,8 @@ export const threejs_component = (() => {
 
       this.scene_.fog.color.copy(uniforms["bottomColor"].value);
 
-      const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
+      // const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
+      const skyGeo = new THREE.SphereGeometry(5000, 32, 15);
       const skyMat = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: _VS,
