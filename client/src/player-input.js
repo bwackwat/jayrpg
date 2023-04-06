@@ -111,9 +111,10 @@ export const player_input = (() => {
     }
 
     _onKeyDown(event) {
-      event.preventDefault();
-      if(!JayState.keys[event.keyCode]){
-        JayState.keys[event.keyCode] = true;
+      JayState.keys[event.keyCode] = true;
+
+      if(event.ctrlKey){
+        JayState.controlKey = false;
       }
 
       if (event.keyCode === 9){
@@ -151,6 +152,10 @@ export const player_input = (() => {
     _onKeyUp(event) {
       JayState.keys[event.keyCode] = false;
 
+      if(event.ctrlKey){
+        JayState.controlKey = false;
+      }
+
       if (event.currentTarget.activeElement != document.body) {
         return;
       }
@@ -175,6 +180,9 @@ export const player_input = (() => {
           break;
         case 8: // BACKSPACE
           this._keys.backspace = false;
+          break;
+        case 8: // N
+          JayState.noClipping = !JayState.noClipping;
           break;
       }
     }

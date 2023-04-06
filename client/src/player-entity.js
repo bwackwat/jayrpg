@@ -206,175 +206,196 @@ export const player_entity = (() => {
           action: this.stateMachine_._currentState.Name,
       });
 
-      const currentState = this.stateMachine_._currentState;
-      if (currentState.Name != 'walk' &&
-          currentState.Name != 'run' &&
-          currentState.Name != 'idle') {
-        return;
-      }
-    
-      const velocity = this.velocity_;
-      const frameDecceleration = new THREE.Vector3(
-          velocity.x * this.decceleration_.x,
-          velocity.y * this.decceleration_.y,
-          velocity.z * this.decceleration_.z
-      );
-      frameDecceleration.multiplyScalar(timeInSeconds);
-      frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
-          Math.abs(frameDecceleration.z), Math.abs(velocity.z));
-      
-      frameDecceleration.x = Math.sign(frameDecceleration.x) * Math.min(
-        Math.abs(frameDecceleration.x), Math.abs(velocity.x));
-  
-      velocity.add(frameDecceleration);
-  
-      const controlObject = this.group_;
-      const _Q = new THREE.Quaternion();
-      const _A = new THREE.Vector3();
-      const _R = controlObject.quaternion.clone();
-      
-      let rotation = controlObject.quaternion.clone();
-  
-      const acc = this.acceleration_.clone();
-      if (input._keys.shift) {
-        acc.multiplyScalar(2.0);
-      }
+      let pos = null;
 
-      if (JayState.controlScheme == 0){
+      if(JayState.noClipping){
+        let speed = 0.5;
+
+        pos = this._group.position.clone()
         if (input._keys.forward) {
-          velocity.z += acc.z * timeInSeconds;
+          pos.x += speed;
         }
         if (input._keys.backward) {
-          velocity.z -= acc.z * timeInSeconds;
+          pos.x -= speed;
         }
-
         if (input._keys.left) {
-          _A.set(0, 1, 0);
-          _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this.acceleration_.y);
-          _R.multiply(_Q);
+          pos.z += speed;
         }
         if (input._keys.right) {
-          _A.set(0, 1, 0);
-          _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this.acceleration_.y);
-          _R.multiply(_Q);
+          pos.z -= speed;
+        }
+        if (input._keys.space) {
+          pos.y += speed;
+        }
+        if (JayState.controlKey) {
+          pos.y -= speed;
         }
       }else{
-        _A.set(0, 1, 0);
-
-        if(JayState.rightMouseDown){
-          var vector = new THREE.Vector3(); // create once and reuse it!
-          JayState.camera.getWorldDirection( vector );
-          var theta = Math.atan2(vector.x, vector.z);
-          
-          this.facing = theta;
-          // this.facing = JayState.orbitControls.getAzimuthalAngle() + Math.PI;
+        const currentState = this.stateMachine_._currentState;
+        if (currentState.Name != 'walk' &&
+            currentState.Name != 'run' &&
+            currentState.Name != 'idle') {
+          return;
         }
-        // console.log(this.facing);
+      
+        const velocity = this.velocity_;
+        const frameDecceleration = new THREE.Vector3(
+            velocity.x * this.decceleration_.x,
+            velocity.y * this.decceleration_.y,
+            velocity.z * this.decceleration_.z
+        );
+        frameDecceleration.multiplyScalar(timeInSeconds);
+        frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
+            Math.abs(frameDecceleration.z), Math.abs(velocity.z));
+        
+        frameDecceleration.x = Math.sign(frameDecceleration.x) * Math.min(
+          Math.abs(frameDecceleration.x), Math.abs(velocity.x));
+    
+        velocity.add(frameDecceleration);
+    
+        const controlObject = this.group_;
+        const _Q = new THREE.Quaternion();
+        const _A = new THREE.Vector3();
+        const _R = controlObject.quaternion.clone();
+        
+        let rotation = controlObject.quaternion.clone();
+    
+        const acc = this.acceleration_.clone();
+        if (input._keys.shift) {
+          acc.multiplyScalar(2.0);
+        }
 
-        if (input._keys.forward){
-          velocity.z += acc.z * timeInSeconds;
-
-          if (input._keys.left){
-            // velocity.x += acc.x * timeInSeconds;
-            rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 4.0).clone();
-          } else if (input._keys.right){
-            // velocity.x -= acc.x * timeInSeconds;
-            rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 4.0).clone();
-          } else {
-            rotation = _Q.setFromAxisAngle(_A, this.facing).clone();
+        if (JayState.controlScheme == 0){
+          if (input._keys.forward) {
+            velocity.z += acc.z * timeInSeconds;
+          }
+          if (input._keys.backward) {
+            velocity.z -= acc.z * timeInSeconds;
           }
 
-        } else if (input._keys.backward){
-          velocity.z += acc.z * timeInSeconds;
-
-          if (input._keys.left){
-            // velocity.x += acc.x * timeInSeconds;
-            rotation = _Q.setFromAxisAngle(_A, this.facing + 3.0 * Math.PI / 4.0).clone();
-          } else if (input._keys.right){
-            // velocity.x -= acc.x * timeInSeconds;
-            rotation = _Q.setFromAxisAngle(_A, this.facing - 3.0 * Math.PI / 4.0).clone();
-          }else{
-            rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI).clone();
+          if (input._keys.left) {
+            _A.set(0, 1, 0);
+            _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this.acceleration_.y);
+            _R.multiply(_Q);
           }
+          if (input._keys.right) {
+            _A.set(0, 1, 0);
+            _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this.acceleration_.y);
+            _R.multiply(_Q);
+          }
+        }else{
+          _A.set(0, 1, 0);
 
-        } else if (input._keys.left){
-          velocity.z += acc.z * timeInSeconds;
-          
-          // velocity.x += acc.x * timeInSeconds;
-          rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 2.0).clone();
-        } else if (input._keys.right){
-          velocity.z += acc.z * timeInSeconds;
+          if(JayState.rightMouseDown){
+            var vector = new THREE.Vector3(); // create once and reuse it!
+            JayState.camera.getWorldDirection( vector );
+            var theta = Math.atan2(vector.x, vector.z);
+            
+            this.facing = theta;
+            // this.facing = JayState.orbitControls.getAzimuthalAngle() + Math.PI;
+          }
+          // console.log(this.facing);
 
-          // velocity.x -= acc.x * timeInSeconds;
-          rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 2.0).clone();
+          if (input._keys.forward){
+            velocity.z += acc.z * timeInSeconds;
+
+            if (input._keys.left){
+              // velocity.x += acc.x * timeInSeconds;
+              rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 4.0).clone();
+            } else if (input._keys.right){
+              // velocity.x -= acc.x * timeInSeconds;
+              rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 4.0).clone();
+            } else {
+              rotation = _Q.setFromAxisAngle(_A, this.facing).clone();
+            }
+
+          } else if (input._keys.backward){
+            velocity.z += acc.z * timeInSeconds;
+
+            if (input._keys.left){
+              // velocity.x += acc.x * timeInSeconds;
+              rotation = _Q.setFromAxisAngle(_A, this.facing + 3.0 * Math.PI / 4.0).clone();
+            } else if (input._keys.right){
+              // velocity.x -= acc.x * timeInSeconds;
+              rotation = _Q.setFromAxisAngle(_A, this.facing - 3.0 * Math.PI / 4.0).clone();
+            }else{
+              rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI).clone();
+            }
+
+          } else if (input._keys.left){
+            velocity.z += acc.z * timeInSeconds;
+            
+            // velocity.x += acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing + Math.PI / 2.0).clone();
+          } else if (input._keys.right){
+            velocity.z += acc.z * timeInSeconds;
+
+            // velocity.x -= acc.x * timeInSeconds;
+            rotation = _Q.setFromAxisAngle(_A, this.facing - Math.PI / 2.0).clone();
+          }
+        }
+    
+        controlObject.quaternion.copy(_R);
+    
+        const oldPosition = new THREE.Vector3();
+        oldPosition.copy(controlObject.position);
+    
+        const forward = new THREE.Vector3(0, 0, 1);
+        forward.applyQuaternion(controlObject.quaternion);
+        forward.normalize();
+    
+        // const sideways = new THREE.Vector3(1, 0, 0);
+        // sideways.applyQuaternion(controlObject.quaternion);
+        // sideways.normalize();
+    
+        // sideways.multiplyScalar(velocity.x * timeInSeconds);
+        forward.multiplyScalar(velocity.z * timeInSeconds);
+    
+        pos = controlObject.position.clone();
+        pos.add(forward);
+        // pos.add(sideways);
+
+        const collisions = this._FindIntersections(pos, oldPosition);
+        if (collisions.length > 0) {
+          return;
+        }
+
+        // const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
+        pos.y = JayState.terrain.GetHeight(pos)[0];
+
+        if (JayState.keys[32] && !JayState.jump && JayState.yVelocity === 0.0){
+          JayState.jump = true;
+          JayState.yVelocity = 1.6;
+          this.stateMachine_.SetState('run');
+        }
+        if (JayState.jump){
+          JayState.yVelocity -= 0.2;
+        }
+        if (JayState.yOffset < 0.0){
+          JayState.yVelocity = 0.0;
+          JayState.yOffset = 0.0;
+          JayState.jump = false;
+        }
+        JayState.yOffset += JayState.yVelocity;
+        pos.y += JayState.yOffset;
+
+        JayState.lastPosition = pos.clone();
+
+        var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
+        var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
+        let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
+        JayState.camera.position.set( x, y, z );
+        JayState.camera.lookAt(JayState.lastPosition);
+        
+        if (JayState.controlScheme == 0){
+          this.Parent.SetQuaternion(controlObject.quaternion);
+        }else{
+          this.Parent.SetQuaternion(rotation);
         }
       }
-  
-      controlObject.quaternion.copy(_R);
-  
-      const oldPosition = new THREE.Vector3();
-      oldPosition.copy(controlObject.position);
-  
-      const forward = new THREE.Vector3(0, 0, 1);
-      forward.applyQuaternion(controlObject.quaternion);
-      forward.normalize();
-  
-      // const sideways = new THREE.Vector3(1, 0, 0);
-      // sideways.applyQuaternion(controlObject.quaternion);
-      // sideways.normalize();
-  
-      // sideways.multiplyScalar(velocity.x * timeInSeconds);
-      forward.multiplyScalar(velocity.z * timeInSeconds);
-  
-      let pos = controlObject.position.clone();
-      pos.add(forward);
-      // pos.add(sideways);
-
-      const collisions = this._FindIntersections(pos, oldPosition);
-      if (collisions.length > 0) {
-        return;
-      }
-
-      // const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
-      pos.y = JayState.terrain.GetHeight(pos)[0];
-
-      if (JayState.keys[32] && !JayState.jump && JayState.yVelocity === 0.0){
-        JayState.jump = true;
-        JayState.yVelocity = 1.6;
-        this.stateMachine_.SetState('run');
-      }
-      if (JayState.jump){
-        JayState.yVelocity -= 0.2;
-      }
-      if (JayState.yOffset < 0.0){
-        JayState.yVelocity = 0.0;
-        JayState.yOffset = 0.0;
-        JayState.jump = false;
-      }
-      JayState.yOffset += JayState.yVelocity;
-      pos.y += JayState.yOffset;
-
-      JayState.lastPosition = pos.clone();
-
-      var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
-      var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
-      let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
-      JayState.camera.position.set( x, y, z );
-      JayState.camera.lookAt(JayState.lastPosition);
 
       controlObject.position.copy(pos);
-  
       this.Parent.SetPosition(controlObject.position);
-
-      // let cameraTarget = controlObject.position.clone().add(new THREE.Vector3(0.0, 8.0, 0.0));
-      // JayState.orbitControls.target.copy(cameraTarget);
-      // JayState.orbitControls.update();
-
-      if (JayState.controlScheme == 0){
-        this.Parent.SetQuaternion(controlObject.quaternion);
-      }else{
-        this.Parent.SetQuaternion(rotation);
-      }
     }
   };
   

@@ -5,6 +5,7 @@ export default class JayState {
     static keys = {};
     static leftMouseDown = false;
     static rightMouseDown = false;
+    static controlKey = false;
     static jump = false;
     static doubleJump = false;
     static yVelocity = 0.0;
@@ -20,6 +21,7 @@ export default class JayState {
     static orbitControls = null;
     static lastPosition = new THREE.Vector3(0.0, 8.0, 0.0);
     static cameraAngle = 0.0;
+    static noClipping = false;
     
     static {
         // console.log("State initialized.");
