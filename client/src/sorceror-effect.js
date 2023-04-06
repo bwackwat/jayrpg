@@ -55,7 +55,6 @@ export const sorceror_effect = (() => {
       this.params_ = params;
 
       this.particles_ = new particle_system.ParticleSystem({
-          parent: params.scene,
           texture: './resources/textures/fire.png',
       });
     }

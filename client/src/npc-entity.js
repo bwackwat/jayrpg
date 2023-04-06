@@ -1,10 +1,9 @@
 import * as THREE from 'three';
 
+import {defs} from '/shared/defs.mjs';
 import {entity} from './entity.js';
 import {player_entity} from './player-entity.js'
-
-import {defs} from '/shared/defs.mjs';
-
+import JayState from './state.js';
 
 export const npc_entity = (() => {
 
@@ -30,7 +29,7 @@ export const npc_entity = (() => {
           c.geometry.dispose();
         }
       });
-      this.params_.scene.remove(this.group_);
+      JayState.scene.remove(this.group_);
     }
 
     InitEntity() {
@@ -41,7 +40,7 @@ export const npc_entity = (() => {
       this.animations_ = {};
       this.group_ = new THREE.Group();
 
-      this.params_.scene.add(this.group_);
+      JayState.scene.add(this.group_);
       this.queuedState_ = null;
 
       this.LoadModels_();

@@ -86,23 +86,13 @@ export const terrain = (function() {
         normal.onLoad = () => {     
           s.uniforms.TRIPLANAR_normalMap.value = normal.Info['normal'].atlas;
         };
-  
-        // s.fragmentShader += 'poop';
       };
 
-      // this._material.customProgramCacheKey = function() {
-      //   return '0';
-      // }
-      // this._material.needsUpdate = true;
-
       this._builder = new terrain_builder_threaded.TerrainChunkRebuilder_Threaded();
-      // this._builder = new terrain_builder.TerrainChunkRebuilder();
 
       this._InitNoise();
       this._InitBiomes(params);
       this._InitTerrain(params);
-      // JayState.renderer.initMaterial(this._material, params.scene, 'terrain');
-      // this.
     }
 
     _InitNoise() {
@@ -124,7 +114,7 @@ export const terrain = (function() {
       const onNoiseChanged = () => {
         this._builder.Rebuild(this._chunks);
       };
-
+JayState.scene
       const noiseRollup = params.gui.addFolder('Terrain.Biomes');
       noiseRollup.add(params.guiParams.biomes, "scale", 64.0, 4096.0).onChange(
           onNoiseChanged);
@@ -160,7 +150,7 @@ export const terrain = (function() {
       };
 
       this._groups = [...new Array(6)].map(_ => new THREE.Group());
-      params.scene.add(...this._groups);
+      JayState.scene.add(...this._groups);
 
       const terrainRollup = params.gui.addFolder('Terrain');
       terrainRollup.add(params.guiParams.terrain, "wireframe").onChange(() => {

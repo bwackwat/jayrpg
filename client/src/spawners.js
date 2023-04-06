@@ -27,7 +27,6 @@ export const spawners = (() => {
 
     Spawn(playerParams) {
       const params = {
-        scene: this.params_.scene,
         desc: playerParams,
       };
 
@@ -59,9 +58,7 @@ export const spawners = (() => {
       player.AddComponent(
           new network_player_controller.NetworkEntityController({
               target: player}));
-      player.AddComponent(new blood_effect.BloodEffect({
-          scene: this.params_.scene,
-      }));
+      player.AddComponent(new blood_effect.BloodEffect({}));
       if (playerParams.character.class == 'sorceror') {
         player.AddComponent(
             new sorceror_effect.SorcerorEffect(params));
@@ -82,7 +79,6 @@ export const spawners = (() => {
       const npc = new entity.Entity();
       npc.Account = desc.account;
       npc.AddComponent(new npc_entity.NPCController({
-          scene: this.params_.scene,
           desc: desc,
       }));
       npc.AddComponent(
@@ -109,14 +105,9 @@ export const spawners = (() => {
       npc.AddComponent(
           new equip_weapon_component.EquipWeapon({desc: desc}));
       npc.AddComponent(new inventory_controller.InventoryController());
-      npc.AddComponent(new blood_effect.BloodEffect({
-          scene: this.params_.scene,
-      }));
+      npc.AddComponent(new blood_effect.BloodEffect({}));
       if (desc.character.class == 'sorceror') {
-        npc.AddComponent(
-            new sorceror_effect.SorcerorEffect({
-                scene: this.params_.scene,
-            }));
+        npc.AddComponent(new sorceror_effect.SorcerorEffect({}));
       }
 
       this.Manager.Add(npc, name);

@@ -57,7 +57,7 @@ export const player_entity = (() => {
 
       this.facing = 0.0;
 
-      this.params_.scene.add(this.group_);
+      JayState.scene.add(this.group_);
 
       this.animations_ = {};
   
@@ -207,6 +207,7 @@ export const player_entity = (() => {
       });
 
       let pos = null;
+      const controlObject = this.group_;
 
       if(JayState.noClipping){
         let speed = 0.5;
@@ -253,7 +254,6 @@ export const player_entity = (() => {
     
         velocity.add(frameDecceleration);
     
-        const controlObject = this.group_;
         const _Q = new THREE.Quaternion();
         const _A = new THREE.Vector3();
         const _R = controlObject.quaternion.clone();

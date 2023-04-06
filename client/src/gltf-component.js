@@ -4,7 +4,7 @@ import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/js
 import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/loaders/FBXLoader.js';
 
 import {entity} from './entity.js';
-
+import JayState from './state.js';
 
 export const gltf_component = (() => {
 
@@ -40,7 +40,7 @@ export const gltf_component = (() => {
 
     _OnLoaded(obj) {
       this._target = obj;
-      this._params.scene.add(this._target);
+      JayState.scene.add(this._target);
 
       this._target.scale.setScalar(this._params.scale);
       this._target.position.copy(this.parent_._position);
@@ -137,7 +137,7 @@ export const gltf_component = (() => {
 
     _OnLoaded(obj, animations) {
       this._target = obj;
-      this._params.scene.add(this._target);
+      JayState.scene.add(this._target);
 
       this._target.scale.setScalar(this._params.scale);
       this._target.position.copy(this._parent._position);

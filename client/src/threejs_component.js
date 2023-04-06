@@ -189,32 +189,8 @@ export const threejs_component = (() => {
         }
       }, false);
 
-      // JayState.renderer.domElement.addEventListener("mousemove", function(event) {
-      //   // if (mouseDown) {
-      //       var deltaX = event.clientX - JayState.mouseX;
-      //       var deltaY = event.clientY - JayState.mouseY;
-
-      //       // mesh.rotation.y += deltaX / 100;
-      //       // mesh.rotation.x += deltaY / 100;
-      //   // }
-
-      //   JayState.mouseX = event.clientX;
-      //   JayState.mouseY = event.clientY;
-      // });
-      
-      // controls.addEventListener('lock', function () {
-      //     // ...
-      // });
-      // controls.addEventListener('unlock', function () {
-      //     // ...
-      // });
-      // controls.addEventListener('drag', function (event) {
-      //     var distance = event.distance;
-      //     console.log(distance);
-      // });
-
-      this.scene_ = new THREE.Scene();
-      this.scene_.fog = new THREE.FogExp2(0x89b2eb, 0.00002);
+      JayState.scene = new THREE.Scene();
+      JayState.scene.fog = new THREE.FogExp2(0x89b2eb, 0.00002);
 
       let light = new THREE.DirectionalLight(0x8088b3, 0.7);
       light.position.set(-10, 500, 10);
@@ -229,7 +205,7 @@ export const threejs_component = (() => {
       light.shadow.camera.right = -100;
       light.shadow.camera.top = 100;
       light.shadow.camera.bottom = -100;
-      this.scene_.add(light);
+      JayState.scene.add(light);
 
       this.sun_ = light;
 
@@ -240,7 +216,7 @@ export const threejs_component = (() => {
       const hemiLight = new THREE.HemisphereLight(0x424a75, 0x6a88b5, 0.7);
       // hemiLight.color.setHSL(0.6, 1, 0.4);
       // hemiLight.groundColor.setHSL(0.095, 1, 0.5);
-      this.scene_.add(hemiLight);
+      JayState.scene.add(hemiLight);
 
 
       const loader = new THREE.CubeTextureLoader();
@@ -263,7 +239,7 @@ export const threejs_component = (() => {
       };
       // uniforms["topColor"].value.copy(hemiLight.color);
 
-      this.scene_.fog.color.copy(uniforms["bottomColor"].value);
+      JayState.scene.fog.color.copy(uniforms["bottomColor"].value);
 
       // const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
       const skyGeo = new THREE.SphereGeometry(5000, 32, 15);
@@ -275,7 +251,7 @@ export const threejs_component = (() => {
       });
 
       const sky = new THREE.Mesh(skyGeo, skyMat);
-      this.scene_.add(sky);
+      JayState.scene.add(sky);
     }
 
     Update(_) {

@@ -69,9 +69,6 @@ class CrappyMMOAttempt {
     threejs.AddComponent(new threejs_component.ThreeJSController());
     this.entityManager_.Add(threejs);
 
-    // Hack
-    this.scene_ = threejs.GetComponent('ThreeJSController').scene_;
-
     const ui = new entity.Entity();
     ui.AddComponent(new ui_controller.UIController());
     this.entityManager_.Add(ui, 'ui');
@@ -82,7 +79,6 @@ class CrappyMMOAttempt {
 
     const t = new entity.Entity();
     JayState.terrain = new terrain.TerrainChunkManager({
-      scene: this.scene_,
       target: 'player',
       gui: this._gui,
       guiParams: this._guiParams
@@ -96,7 +92,6 @@ class CrappyMMOAttempt {
 
     const scenery = new entity.Entity();
     scenery.AddComponent(new scenery_controller.SceneryController({
-      scene: this.scene_,
       grid: this.grid_,
     }));
     this.entityManager_.Add(scenery, 'scenery');
@@ -104,11 +99,9 @@ class CrappyMMOAttempt {
     const spawner = new entity.Entity();
     spawner.AddComponent(new spawners.PlayerSpawner({
       grid: this.grid_,
-      scene: this.scene_,
     }));
     spawner.AddComponent(new spawners.NetworkEntitySpawner({
       grid: this.grid_,
-      scene: this.scene_,
     }));
     this.entityManager_.Add(spawner, 'spawners');
 
@@ -125,14 +118,8 @@ class CrappyMMOAttempt {
   }
 
   LoadPlayer_() {
-    const params = {
-      scene: this.scene_,
-    };
-
     const levelUpSpawner = new entity.Entity();
-    levelUpSpawner.AddComponent(new level_up_component.LevelUpComponentSpawner({
-      scene: this.scene_,
-    }));
+    levelUpSpawner.AddComponent(new level_up_component.LevelUpComponentSpawner({}));
     this.entityManager_.Add(levelUpSpawner, 'level-up-spawner');
   }
 
@@ -142,7 +129,7 @@ class CrappyMMOAttempt {
         this.previousRAF_ = t;
       }
 
-      JayState.renderer.render(this.scene_, JayState.camera);
+      JayState.renderer.render(JayState.scene, JayState.camera);
       this.Step_(t - this.previousRAF_);
       this.previousRAF_ = t;
 

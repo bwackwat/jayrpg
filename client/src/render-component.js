@@ -4,7 +4,7 @@ import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/js
 import {OBJLoader} from 'https://cdn.jsdelivr.net/npm/three@0.151.3/examples/jsm/loaders/OBJLoader.js';
 
 import {entity} from './entity.js';
-
+import JayState from './state.js';
 
 export const render_component = (() => {
 
@@ -13,7 +13,7 @@ export const render_component = (() => {
       super();
       this.group_ = new THREE.Group();
       this.params_ = params;
-      this.params_.scene.add(this.group_);
+      JayState.scene.add(this.group_);
     }
 
     Destroy() {
@@ -25,7 +25,7 @@ export const render_component = (() => {
           c.geometry.dispose();
         }
       });
-      this.params_.scene.remove(this.group_);
+      JayState.scene.remove(this.group_);
     }
 
     InitEntity() {

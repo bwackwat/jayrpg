@@ -128,7 +128,6 @@ export const scenery_controller = (() => {
   
         const e = new entity.Entity();
         e.AddComponent(new render_component.RenderComponent({
-          scene: this.params_.scene,
           resourcePath: './resources/nature2/GLTF/',
           resourceName: 'Cloud' + index + '.glb',
           scale: Math.random() * 20 + 40,
@@ -176,7 +175,6 @@ export const scenery_controller = (() => {
 
       const e = new entity.Entity();
       e.AddComponent(new render_component.RenderComponent({
-        scene: this.params_.scene,
         resourcePath: randomProp.resourcePath,
         resourceName: randomProp.base,
         textures: {

@@ -226,7 +226,7 @@ export const particle_system = (() => {
   
       this.points_ = new THREE.Points(this.geometry_, this.material_);
   
-      params.parent.add(this.points_);
+      JayState.scene.add(this.points_);
   
       this.emitters_ = [];
       this.particles_ = [];

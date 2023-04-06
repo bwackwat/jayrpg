@@ -16,6 +16,7 @@ export default class JayState {
     static mouseY = 0.0;
 
     static renderer = null;
+    static scene = null;
     static camera = null;
     static pointerControls = null;
     static orbitControls = null;
