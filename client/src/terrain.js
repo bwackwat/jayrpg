@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+import * as THREE from 'three';
 
 import {entity} from './entity.js';
 import {quadtree} from './quadtree.js';
@@ -12,6 +12,7 @@ import {terrain_constants} from '/shared/terrain-constants.mjs';
 import {terrain_height} from '/shared/terrain-height.mjs';
 
 import {noise} from '/shared/noise.mjs';
+import JayState from './state.js';
 
 
 export const terrain = (function() {
@@ -89,12 +90,19 @@ export const terrain = (function() {
         // s.fragmentShader += 'poop';
       };
 
+      // this._material.customProgramCacheKey = function() {
+      //   return '0';
+      // }
+      // this._material.needsUpdate = true;
+
       this._builder = new terrain_builder_threaded.TerrainChunkRebuilder_Threaded();
       // this._builder = new terrain_builder.TerrainChunkRebuilder();
 
       this._InitNoise();
       this._InitBiomes(params);
       this._InitTerrain(params);
+      // JayState.renderer.initMaterial(this._material, params.scene, 'terrain');
+      // this.
     }
 
     _InitNoise() {
@@ -226,6 +234,7 @@ export const terrain = (function() {
     }
 
     _UpdateVisibleChunks_Quadtree(target) {
+      // console.log("_UpdateVisibleChunks_Quadtree");
       function _Key(c) {
         return c.position[0] + '/' + c.position[2] + ' [' + c.size + ']';
       }
@@ -282,6 +291,8 @@ export const terrain = (function() {
       }
 
       this._chunks = newTerrainChunks;
+
+      // this._material.needsUpdate = true;
     }
   }
 

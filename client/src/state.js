@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+import * as THREE from 'three';
 
 export default class JayState {
     static controlScheme = 1;
@@ -22,7 +22,7 @@ export default class JayState {
     static cameraAngle = 0.0;
     
     static {
-        console.log("State initialized.");
+        // console.log("State initialized.");
     }
 
     static message = function(msg) {

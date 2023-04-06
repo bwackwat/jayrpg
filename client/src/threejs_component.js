@@ -1,9 +1,9 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+import * as THREE from 'three';
 
-import { MOUSE } from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
-import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/TrackballControls.js';
-import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/PointerLockControls.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/OrbitControls.js';
+// import { MOUSE } from 'three';
+// import { TrackballControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/TrackballControls.js';
+// import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/PointerLockControls.js';
+// import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/controls/OrbitControls.js';
 
 import { entity } from "./entity.js";
 
@@ -167,12 +167,12 @@ export const threejs_component = (() => {
       document.addEventListener('pointerlockchange', function () {
         if (document.pointerLockElement === document.body ||
             document.mozPointerLockElement === document.body) {
-          console.log('The pointer lock status is now locked');
-          JayState.message('Locked');
+          // console.log('The pointer lock status is now locked');
+          // JayState.message('Locked');
           JayState.pointerLocked = true;
           document.body.addEventListener("mousemove", moveCallback, true);
         } else {
-          console.log('The pointer lock status is now unlocked');
+          // console.log('The pointer lock status is now unlocked');
           JayState.pointerLocked = false;
           document.body.removeEventListener("mousemove", moveCallback, true);
         }
