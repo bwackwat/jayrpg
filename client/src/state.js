@@ -18,10 +18,18 @@ export default class JayState {
     static renderer = null;
     static scene = null;
     static camera = null;
+    static sky = null;
+    static sprites = [];
+
     static pointerControls = null;
     static orbitControls = null;
-    static lastPosition = new THREE.Vector3(0.0, 8.0, 0.0);
-    static cameraAngle = 0.0;
+    static lastPosition = new THREE.Vector3(0.0, 0.0, 0.0);
+    static horizontalCameraAngle = 0.0;
+    static verticalCameraAngle = 0.0;
+    static cameraZoom = 40.0;
+    static cameraZoomStep = 2.0;
+    static minZoom = 10.0;
+    static maxZoom = 80.0;
     static noClipping = false;
     
     static {

@@ -21,6 +21,7 @@ export const player_input = (() => {
       super();
       this._params = params;
       this._Init();
+      this.lastScrollPosition = 0;
     }
   
     _Init() {
@@ -38,6 +39,7 @@ export const player_input = (() => {
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
       document.addEventListener('pointerup', (e) => this._onMouseUp(e), false);
       document.addEventListener('pointerdown', (e) => this._onMouseDown(e), false);
+      document.addEventListener('wheel', (e) => this._onMouseScroll(e), false);
       // document.addEventListener('blur', function () {
       //   console.log("FOCUS LOST");
       //   this._keys.forward = false;
@@ -48,6 +50,20 @@ export const player_input = (() => {
       //   this._keys.shift = false;
       //   this._keys.backspace = false;
       // }, false);
+    }
+
+    _onMouseScroll(event) {
+      if (event.deltaY < 0) {
+         JayState.cameraZoom -= JayState.cameraZoomStep;
+         if (JayState.cameraZoom < JayState.minZoom) {
+           JayState.cameraZoom = JayState.minZoom;
+         }
+      } else {
+        JayState.cameraZoom += JayState.cameraZoomStep;
+        if (JayState.cameraZoom > JayState.maxZoom) {
+          JayState.cameraZoom = JayState.maxZoom;
+        }
+      }
     }
 
     _onMouseDown(event) {
@@ -113,9 +129,9 @@ export const player_input = (() => {
     _onKeyDown(event) {
       JayState.keys[event.keyCode] = true;
 
-      if(event.ctrlKey){
-        JayState.controlKey = false;
-      }
+      // if(event.ctrlKey){
+      //   JayState.controlKey = false;
+      // }
 
       if (event.keyCode === 9){
         document.exitPointerLock();
@@ -146,15 +162,18 @@ export const player_input = (() => {
         case 8: // BACKSPACE
           this._keys.backspace = true;
           break;
+        case 17: // LEFT CONTROL
+          JayState.controlKey = true;
+          break;
       }
     }
   
     _onKeyUp(event) {
       JayState.keys[event.keyCode] = false;
 
-      if(event.ctrlKey){
-        JayState.controlKey = false;
-      }
+      // if(event.ctrlKey){
+      //   JayState.controlKey = false;
+      // }
 
       if (event.currentTarget.activeElement != document.body) {
         return;
@@ -181,9 +200,15 @@ export const player_input = (() => {
         case 8: // BACKSPACE
           this._keys.backspace = false;
           break;
-        case 8: // N
-          JayState.noClipping = !JayState.noClipping;
+        case 17: // LEFT CONTROL
+          JayState.controlKey = false;
           break;
+        case 78: // N
+          JayState.noClipping = !JayState.noClipping;
+          JayState.message("No clipping: " + JayState.noClipping);
+          break;
+        default:
+          console.log(event.keyCode);
       }
     }
   };

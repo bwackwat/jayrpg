@@ -187,8 +187,6 @@ export const player_entity = (() => {
     }
 
     Update(timeInSeconds) {
-      // console.log("Player Update");
-
       if (!this.stateMachine_) {
         return;
       }
@@ -210,20 +208,32 @@ export const player_entity = (() => {
       const controlObject = this.group_;
 
       if(JayState.noClipping){
-        let speed = 0.5;
+        let speed = input._keys.shift ? 10.0 : 0.5;
 
-        pos = this._group.position.clone()
+        pos = controlObject.position.clone()
+        let forwardOffsetX = Math.sin(JayState.horizontalCameraAngle) * Math.cos(JayState.verticalCameraAngle + Math.PI) * speed;
+        let forwardOffsetZ = Math.cos(JayState.horizontalCameraAngle) * Math.cos(JayState.verticalCameraAngle + Math.PI) * speed;
+        let forwardOffsetY = Math.sin(JayState.verticalCameraAngle + Math.PI) * speed;
+        let sideOffsetX = Math.sin(JayState.horizontalCameraAngle - Math.PI / 2) * speed;
+        let sideOffsetZ = Math.cos(JayState.horizontalCameraAngle + Math.PI / 2) * speed;
+        
         if (input._keys.forward) {
-          pos.x += speed;
+          pos.x += forwardOffsetX;
+          pos.y += forwardOffsetY;
+          pos.z += forwardOffsetZ;
         }
         if (input._keys.backward) {
-          pos.x -= speed;
+          pos.x -= forwardOffsetX;
+          pos.y -= forwardOffsetY;
+          pos.z -= forwardOffsetZ;
         }
         if (input._keys.left) {
-          pos.z += speed;
+          pos.x += sideOffsetX;
+          pos.z += sideOffsetZ;
         }
         if (input._keys.right) {
-          pos.z -= speed;
+          pos.x -= sideOffsetX;
+          pos.z -= sideOffsetZ;
         }
         if (input._keys.space) {
           pos.y += speed;
@@ -231,6 +241,43 @@ export const player_entity = (() => {
         if (JayState.controlKey) {
           pos.y -= speed;
         }
+
+        // let inverseQuaternion = new THREE.Quaternion();
+        // inverseQuaternion.setFromEuler(new THREE.Euler(JayState.verticalCameraAngle + Math.PI, JayState.horizontalCameraAngle + Math.PI, 0));
+
+        // inverseQuaternion.setFromEuler(new THREE.Euler(JayState.verticalCameraAngle + Math.PI, 0, JayState.horizontalCameraAngle + Math.PI));
+        // let inverseQuaternion = JayState.camera.quaternion.clone();
+        // inverseQuaternion.normalize();
+
+        // let inverseQuaternion = this.Parent.rotation.clone();
+        // this.Parent.SetQuaternion(JayState.camera.quaternion);
+
+        let inverseQuaternion = new THREE.Quaternion();
+        inverseQuaternion._x = -JayState.camera.quaternion._x;
+        inverseQuaternion._y = -JayState.camera.quaternion._y;
+        inverseQuaternion._z = -JayState.camera.quaternion._z;
+        inverseQuaternion._w = -JayState.camera.quaternion._w;
+        this.Parent.SetQuaternion(inverseQuaternion);
+
+
+        // if (input._keys.forward) {
+        //   pos.x += speed;
+        // }
+        // if (input._keys.backward) {
+        //   pos.x -= speed;
+        // }
+        // if (input._keys.left) {
+        //   pos.z += speed;
+        // }
+        // if (input._keys.right) {
+        //   pos.z -= speed;
+        // }
+        // if (input._keys.space) {
+        //   pos.y += speed;
+        // }
+        // if (JayState.controlKey) {
+        //   pos.y -= speed;
+        // }
       }else{
         const currentState = this.stateMachine_._currentState;
         if (currentState.Name != 'walk' &&
@@ -361,7 +408,8 @@ export const player_entity = (() => {
         }
 
         // const terrain = this.FindEntity('terrain').GetComponent('TerrainChunkManager');
-        pos.y = JayState.terrain.GetHeight(pos)[0];
+        const terrainHeight = JayState.terrain.GetHeight(pos)[0]
+        pos.y = terrainHeight;
 
         if (JayState.keys[32] && !JayState.jump && JayState.yVelocity === 0.0){
           JayState.jump = true;
@@ -378,14 +426,9 @@ export const player_entity = (() => {
         }
         JayState.yOffset += JayState.yVelocity;
         pos.y += JayState.yOffset;
-
-        JayState.lastPosition = pos.clone();
-
-        var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
-        var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
-        let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
-        JayState.camera.position.set( x, y, z );
-        JayState.camera.lookAt(JayState.lastPosition);
+        if (pos.y < terrainHeight) {
+          pos.y = terrainHeight;
+        }
         
         if (JayState.controlScheme == 0){
           this.Parent.SetQuaternion(controlObject.quaternion);
@@ -394,8 +437,25 @@ export const player_entity = (() => {
         }
       }
 
+      JayState.lastPosition = pos.clone();
+      let x = JayState.lastPosition.x + Math.sin( JayState.horizontalCameraAngle ) * JayState.cameraZoom;
+      let z = JayState.lastPosition.z + Math.cos( JayState.horizontalCameraAngle ) * JayState.cameraZoom;
+      let y = 0;
+      if(JayState.noClipping){
+        y = JayState.lastPosition.y + Math.sin(JayState.verticalCameraAngle) * JayState.cameraZoom;
+      }else{
+        y = JayState.lastPosition.y + JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
+      }
+      JayState.camera.position.set( x, y, z );
+      JayState.camera.lookAt(JayState.lastPosition);
+
       controlObject.position.copy(pos);
+      JayState.sky.position.copy(pos);
       this.Parent.SetPosition(controlObject.position);
+
+      for (let i = 0; i < JayState.sprites.length; i++) {
+        JayState.sprites[i].lookAt(JayState.camera.position);
+      }
     }
   };
   

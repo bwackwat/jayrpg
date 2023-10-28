@@ -16,6 +16,9 @@ import { spatial_hash_grid } from '/shared/spatial-hash-grid.mjs';
 import { defs } from '/shared/defs.mjs';
 import { threejs_component } from './threejs_component.js';
 import JayState from './state.js';
+import * as Item from './world-item.js';
+
+// import './trusted-security-policies.js';
 
 
 class CrappyMMOAttempt {
@@ -115,6 +118,11 @@ class CrappyMMOAttempt {
       database.GetComponent('InventoryDatabaseController').AddItem(
         k, defs.WEAPONS_DATA[k]);
     }
+
+    new Item.HealthPowerup(10, 10);
+    // new Item.HealthPowerup2(120, 120);
+    // new Item.HealthPowerup3(130, 130);
+    // new Item.HealthPowerup4(140, 140);
   }
 
   LoadPlayer_() {

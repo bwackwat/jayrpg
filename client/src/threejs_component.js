@@ -118,50 +118,14 @@ export const threejs_component = (() => {
       JayState.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       this._OnWindowResize();
       JayState.camera.position.set(25, 10, 25);
-      
-      // JayState.orbitControls = new OrbitControls(JayState.camera, document.body);
-      // JayState.orbitControls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-      // JayState.orbitControls.dampingFactor = 0.1;
-
-      // JayState.orbitControls.enablePan = false;
-      // JayState.orbitControls.enableKeys = false;
-
-      // JayState.orbitControls.minDistance = 10;
-      // JayState.orbitControls.maxDistance = 50;
-
-      // JayState.orbitControls.maxPolarAngle = Math.PI / 2;
-
-      // JayState.orbitControls.mouseButtons = { LEFT: MOUSE.NONE, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE };
 
       function moveCallback(event) {
         if (JayState.rightMouseDown) {
-            // var deltaX = event.clientX - JayState.mouseX;
-            // var deltaY = event.clientY - JayState.mouseY;
-
-            // mesh.rotation.y += deltaX / 100;
-            // mesh.rotation.x += deltaY / 100;
-            // console.log(deltaX, deltaY);
-            // console.log(event.movementX, event.movementY);
-
-            // JayState.camera.position.applyQuaternion(
-            //   new THREE.Quaternion().setFromAxisAngle(
-            //     new THREE.Vector3(0, 1, 0),
-            //     // The positive y-axis
-            //     Math.PI / 200.0 * event.movementX // The amount of rotation to apply this time
-            //   )
-            // );
-            JayState.cameraAngle -= Math.PI / 2000.0 * event.movementX;
-            
-            var x = JayState.lastPosition.x + Math.sin( JayState.cameraAngle ) * 40.0;
-            var z = JayState.lastPosition.z + Math.cos( JayState.cameraAngle ) * 40.0;
-            let y = JayState.terrain.GetHeight(JayState.camera.position)[0] + 20;
-
-            JayState.camera.position.set( x, y, z );
-            JayState.camera.lookAt(JayState.lastPosition);
+            JayState.horizontalCameraAngle -= Math.PI / 2000.0 * event.movementX;
+            if (JayState.noClipping) {
+              JayState.verticalCameraAngle += Math.PI / 2000.0 * event.movementY;
+            }
         }
-
-        // JayState.mouseX = event.clientX;
-        // JayState.mouseY = event.clientY;
       }
 
       document.addEventListener('pointerlockchange', function () {
@@ -241,7 +205,6 @@ export const threejs_component = (() => {
 
       JayState.scene.fog.color.copy(uniforms["bottomColor"].value);
 
-      // const skyGeo = new THREE.SphereBufferGeometry(5000, 32, 15);
       const skyGeo = new THREE.SphereGeometry(5000, 32, 15);
       const skyMat = new THREE.ShaderMaterial({
         uniforms: uniforms,
@@ -250,8 +213,8 @@ export const threejs_component = (() => {
         side: THREE.BackSide
       });
 
-      const sky = new THREE.Mesh(skyGeo, skyMat);
-      JayState.scene.add(sky);
+      JayState.sky = new THREE.Mesh(skyGeo, skyMat);
+      JayState.scene.add(JayState.sky);
     }
 
     Update(_) {
