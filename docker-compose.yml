@@ -1,0 +1,25 @@
+version: "3.9"
+
+# networks:
+#   revops_network:
+#     driver: bridge
+#     name: revops_network
+
+services:
+
+  jayrpg-server:
+    container_name: jayrpg-server
+    image: node-jayrpg-server
+    build:
+      context: ./
+      dockerfile: ./server/dockerfile
+    # environment:
+    #   ENVIRONMENT: local
+    #   DEFAULT_SUPERADMIN_EMAIL: admin@example.com
+    #   DEFAULT_SUPERADMIN_PASSWORD: aq12ws
+    # volumes:
+    #   - ./server:/app
+    ports:
+      - 3000:3000
+    # networks:
+    #   - revops_network

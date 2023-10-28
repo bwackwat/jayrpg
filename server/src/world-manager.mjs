@@ -73,7 +73,7 @@ export const world_manager = (() => {
         for (let z = -40; z <= 40; ++z) {
           if (Math.random() < 0.1) {
             const pos = vec3.fromValues(x * 75, 0, z * 75);
-            if (Math.random() < 0.1) {
+            if (Math.random() < 0.01) { // 1% chance to spawn.
               this.spawners_.push(new MonsterSpawner({
                 parent: this, pos: pos, class: 'warrok'}));
             } else {
